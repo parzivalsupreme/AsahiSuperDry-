@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { formatDay } from '../../lib/dates';
 
-export default function FileView({ entry, editUrl }) {
+export default function FileView({ entry, editUrl, deleteUrl }) {
   const [mode, setMode] = useState('preview');
   const [copied, setCopied] = useState(false);
 
@@ -13,6 +13,12 @@ export default function FileView({ entry, editUrl }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {}
+  };
+
+  const confirmDelete = (e) => {
+    if (!confirm(`Delete "${entry.title}"?\n\nGitHub will open so you can commit the deletion of ${entry.file}.`)) {
+      e.preventDefault();
+    }
   };
 
   return (
@@ -37,6 +43,11 @@ export default function FileView({ entry, editUrl }) {
           {editUrl && (
             <a className="btn btn-sm" href={editUrl} target="_blank" rel="noreferrer">
               Edit on GitHub
+            </a>
+          )}
+          {deleteUrl && (
+            <a className="btn btn-sm btn-danger" href={deleteUrl} target="_blank" rel="noreferrer" onClick={confirmDelete}>
+              Delete
             </a>
           )}
         </div>

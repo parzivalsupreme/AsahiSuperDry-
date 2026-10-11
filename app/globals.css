@@ -109,6 +109,8 @@ code, pre, .mono { font-family: var(--mono); }
   border-color: rgba(31, 35, 40, 0.15);
 }
 .btn-primary:hover { background: var(--btn-primary-hover); }
+.btn-danger { color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { color: #000; background: var(--danger); }
 
 /* ---------- Profile layout ---------- */
 .dashboard { max-width: 1012px; margin: 0 auto; }

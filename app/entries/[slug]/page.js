@@ -24,6 +24,9 @@ export default async function EntryPage({ params }) {
   const editUrl = config.repo
     ? `https://github.com/${config.repo}/edit/${config.branch}/${config.entriesDir}/${entry.file}`
     : null;
+  const deleteUrl = config.repo
+    ? `https://github.com/${config.repo}/delete/${config.branch}/${config.entriesDir}/${entry.file}`
+    : null;
 
   return (
     <div style={{ maxWidth: 1012, margin: '0 auto' }}>
@@ -33,7 +36,7 @@ export default async function EntryPage({ params }) {
         <strong>{entry.file}</strong>
       </nav>
 
-      <FileView entry={entry} editUrl={editUrl} />
+      <FileView entry={entry} editUrl={editUrl} deleteUrl={deleteUrl} />
 
       <nav className="pager">
         {entry.older ? (

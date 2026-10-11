@@ -49,6 +49,21 @@ The site is static, so new entries are added as files and the site is rebuilt:
 - **Commit to GitHub** on the *New entry* page opens GitHub's "new file" page pre-filled with your entry — commit it and the Pages workflow rebuilds the site.
 - Or **Download .md**, drop the file into `entries/`, and run `npm run build`.
 
+## Auto-push your entries
+
+```bash
+npm run autopush
+```
+
+Leave it running while you write. Whenever you add, edit or delete a `.md` file in `entries/`,
+it commits just that folder and pushes to GitHub about 5 seconds after you stop typing,
+and the Pages workflow redeploys the site. Change the delay with `AUTOPUSH_DELAY_MS=10000 npm run autopush`.
+
+## Deleting entries
+
+Open an entry and click **Delete**: GitHub opens a page to commit the file's deletion, and the site
+redeploys without it. Locally, just delete the file (with `npm run autopush` running, that's pushed too).
+
 ## Deploy to GitHub Pages
 
 A workflow is included at `.github/workflows/deploy.yml`. In your repo go to

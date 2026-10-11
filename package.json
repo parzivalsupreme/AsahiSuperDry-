@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "description": "A personal journal with a GitHub-style theme. Every entry is a Markdown file.",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve out"
+    "start": "npx serve out",
+    "autopush": "node scripts/autopush.mjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

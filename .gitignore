@@ -3,3 +3,8 @@ node_modules/
 .next/
 out/
 next-env.d.ts
+
+# Editor temp files (so autopush never commits them)
+*.swp
+*~
+.#*
