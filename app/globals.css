@@ -149,38 +149,15 @@ code, pre, .mono { font-family: var(--mono); }
 .btn-primary:hover { background: var(--btn-primary-hover); }
 
 /* ---------- Profile layout ---------- */
-.profile {
-  display: grid;
-  grid-template-columns: 296px minmax(0, 1fr);
-  gap: 24px;
-}
-@media (max-width: 860px) {
-  .profile { grid-template-columns: 1fr; }
-}
-
-.sidebar .avatar {
-  width: 100%;
-  max-width: 296px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid var(--border-muted);
-  background: linear-gradient(135deg, var(--lvl-2), var(--lvl-4));
+.dashboard { max-width: 1012px; margin: 0 auto; }
+.stats-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 96px;
-  font-weight: 600;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  color: var(--fg-muted);
+  margin-bottom: 24px;
 }
-@media (max-width: 860px) {
-  .sidebar { display: flex; align-items: center; gap: 16px; }
-  .sidebar .avatar { width: 72px; font-size: 32px; }
-}
-.sidebar h1 { margin: 16px 0 0; font-size: 24px; line-height: 1.25; }
-.sidebar .username { color: var(--fg-muted); font-size: 20px; font-weight: 300; }
-.sidebar .bio { margin: 12px 0; }
-.sidebar .stats { color: var(--fg-muted); display: flex; flex-direction: column; gap: 4px; }
-.sidebar .stats strong { color: var(--fg); }
+.stats-row strong { color: var(--fg); }
 
 .section-title {
   font-size: 16px;

@@ -125,8 +125,6 @@ export default function Composer({ config }) {
   return (
     <div style={{ maxWidth: 1012, margin: '0 auto' }}>
       <nav className="breadcrumb">
-        <span>{config.username}</span>
-        <span className="sep">/</span>
         <span>{config.entriesDir}</span>
         <span className="sep">/</span>
         <strong className="mono" style={{ fontSize: 16 }}>{filename}</strong>

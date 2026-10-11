@@ -28,8 +28,6 @@ export default async function EntryPage({ params }) {
   return (
     <div style={{ maxWidth: 1012, margin: '0 auto' }}>
       <nav className="breadcrumb">
-        <Link href="/">{config.username}</Link>
-        <span className="sep">/</span>
         <Link href="/">{config.entriesDir}</Link>
         <span className="sep">/</span>
         <strong>{entry.file}</strong>

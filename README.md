@@ -40,7 +40,7 @@ npm run build   # static site in ./out
 npm start       # serve ./out locally
 ```
 
-Personalize your name, bio and repo in [`journal.config.js`](journal.config.js).
+Set your journal's name, description and repo in [`journal.config.js`](journal.config.js).
 
 ## Writing new entries
 

@@ -28,7 +28,7 @@ function computeStreaks(days, todayKey) {
   return { current, longest };
 }
 
-export default function Dashboard({ entries, config }) {
+export default function Dashboard({ entries }) {
   const [today, setToday] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -48,23 +48,15 @@ export default function Dashboard({ entries, config }) {
 
   const streaks = useMemo(() => computeStreaks([...byDay.keys()], today), [byDay, today]);
   const totalWords = entries.reduce((sum, e) => sum + e.words, 0);
-  const initial = (config.name || config.username || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="profile">
-      <aside className="sidebar">
-        <div className="avatar" aria-hidden="true">{initial}</div>
-        <div>
-          <h1>{config.name}</h1>
-          <div className="username">{config.username}</div>
-          {config.bio && <p className="bio">{config.bio}</p>}
-          <div className="stats">
-            <span><strong>{entries.length}</strong> entries · <strong>{totalWords.toLocaleString()}</strong> words</span>
-            <span>🔥 Current streak: <strong>{streaks.current}</strong> {streaks.current === 1 ? 'day' : 'days'}</span>
-            <span>🏆 Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
-          </div>
-        </div>
-      </aside>
+    <div className="dashboard">
+      <div className="stats-row">
+        <span><strong>{entries.length}</strong> entries</span>
+        <span><strong>{totalWords.toLocaleString()}</strong> words</span>
+        <span>🔥 Current streak: <strong>{streaks.current}</strong> {streaks.current === 1 ? 'day' : 'days'}</span>
+        <span>🏆 Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
+      </div>
 
       <section>
         <ContributionGraph
