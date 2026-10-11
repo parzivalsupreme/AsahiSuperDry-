@@ -1,17 +1,17 @@
 # 📓 Commit Journal
 
-A simple personal journal with a GitHub look — including the green **contribution graph**.
+A simple personal journal with a GitHub look — with a Bloomberg Terminal–style amber-on-black theme and a **contribution graph**.
 Built with Next.js and exported as a **fully static website**. Every entry is a plain Markdown file.
 
 ## Features
 
-- 🟩 GitHub-style contribution graph (last year + per-year view). Shade = words written that day. Click a square to filter entries.
+- 🟧 GitHub-style contribution graph (last year + per-year view). Shade = words written that day. Click a square to filter entries.
 - 🔥 Current & longest writing streaks
 - 📝 Entries are `.md` files in [`entries/`](entries/) with optional frontmatter
 - 🔍 Search by title, text or tag
 - 📄 GitHub-style file view with Preview / Code toggle
 - ✍️ Editor with Write / Preview tabs, autosaved draft, and **Download .md** / **Commit to GitHub**
-- 🌗 Light & dark theme (follows your system)
+- 🖥️ Bloomberg Terminal–style amber-on-black theme
 
 ## Entry format
 

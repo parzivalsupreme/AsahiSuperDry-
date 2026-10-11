@@ -9,13 +9,13 @@ mood: "😊 excited"
 ## Today
 
 Set up this journal. Every entry is just a **Markdown file** in the `entries/` folder,
-and every day I write lights up a green square on the graph — just like GitHub contributions.
+and every day I write lights up an orange square on the graph — just like GitHub contributions.
 
 The more I write, the darker the square gets.
 
 ## How to add an entry
 
-1. Click **+ New entry**
+1. Click **2) New entry**
 2. Write in Markdown and hit **Commit to GitHub** (or download the `.md`)
 3. Rebuild the site
 
