@@ -523,3 +523,56 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
   .editor-footer .buttons { width: 100%; }
   .editor-footer .buttons .btn { flex: 1; justify-content: center; padding: 10px 16px; }
 }
+
+/* ---------- Tags page ---------- */
+.tag-tools { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 24px; }
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  color: var(--fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.tag-pill:hover { background: var(--btn-hover); }
+.tag-pill .count { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.tag-pill.active { background: var(--btn-primary); border-color: var(--btn-primary); color: #000; font-weight: 700; }
+.tag-pill.active .count { color: #000; }
+
+.tag-group { margin-top: 20px; }
+.tag-group h3 {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tag-group h3::after { content: ''; flex: 1; height: 1px; background: var(--border-muted); }
+.tag-group h3 span { color: var(--fg-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.tag-group h3 .label { font: inherit; font-size: 12px; cursor: pointer; text-transform: none; }
+.tag-entries { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border-muted); }
+.tag-entries li {
+  display: grid;
+  grid-template-columns: 170px 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 6px 12px;
+}
+.tag-entries li + li { border-top: 1px solid var(--border-muted); }
+.tag-entries li:hover { background: var(--bg-subtle); }
+.tag-entries .date, .tag-entries .words { color: var(--fg-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.tag-entries a { color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag-entries a:hover { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .tag-tools { flex-basis: 100%; flex-wrap: wrap; }
+  .tag-tools .search { max-width: none; flex: 1; }
+  .tag-entries li { grid-template-columns: 1fr auto; gap: 2px 12px; padding: 8px 12px; }
+  .tag-entries .date { grid-column: 1 / -1; }
+}

@@ -81,7 +81,7 @@ export default function EntryView() {
             {entry.tags.length > 0 && (
               <div className="labels" style={{ margin: '0 0 16px' }}>
                 {entry.tags.map((t) => (
-                  <span className="label" key={t}>{t}</span>
+                  <Link className="label" key={t} href={`/tags/?tag=${encodeURIComponent(t)}`}>{t}</Link>
                 ))}
               </div>
             )}
