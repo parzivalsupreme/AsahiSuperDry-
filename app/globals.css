@@ -475,7 +475,6 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
 
 /* ---------- Messages & sign-in ---------- */
 .error { color: var(--danger); }
-button.fn-key { font: inherit; font-weight: 700; border: none; cursor: pointer; }
 .signin {
   max-width: 420px;
   margin: 48px auto;
