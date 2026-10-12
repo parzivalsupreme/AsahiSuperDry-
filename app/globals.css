@@ -2,7 +2,6 @@
   /* Bloomberg Terminal palette: amber on black */
   --bg: #000000;
   --bg-subtle: #0b0b0b;
-  --bg-inset: #000000;
   --header-bg: #000000;
   --border: #3a2a14;
   --border-muted: #2a1e0e;
@@ -25,7 +24,6 @@
   --lvl-3: #d97000;
   --lvl-4: #ffa630;
   --cell-outline: rgba(255, 140, 0, 0.08);
-  --shadow: none;
   --font: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
   --mono: var(--font);
   color-scheme: dark;

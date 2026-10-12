@@ -66,15 +66,13 @@ export default function Dashboard() {
         <span>🏆 Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
       </div>
 
-      <section>
-        <ContributionGraph
+      <ContributionGraph
           byDay={byDay}
           today={today}
           selectedDay={selectedDay}
           onSelectDay={(key) => setSelectedDay((cur) => (cur === key ? null : key))}
         />
-        <EntryFeed entries={entries} selectedDay={selectedDay} onClearDay={() => setSelectedDay(null)} />
-      </section>
+      <EntryFeed entries={entries} selectedDay={selectedDay} onClearDay={() => setSelectedDay(null)} />
     </div>
   );
 }

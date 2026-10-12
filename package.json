@@ -5,8 +5,7 @@
   "description": "A private journal with a Bloomberg Terminal theme and a contribution graph, backed by Supabase.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "npx serve out"
+    "build": "next build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
