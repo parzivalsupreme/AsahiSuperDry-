@@ -61,6 +61,8 @@ code, pre, .mono { font-family: var(--mono); }
   justify-content: space-between;
   gap: 16px;
 }
+.header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo { height: 48px; width: auto; display: block; margin: -6px 0; }
 .fn-keys { display: flex; gap: 2px; }
 .fn-key {
   color: #000;
@@ -488,10 +490,12 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
 
 /* ---------- Mobile ---------- */
 @media (max-width: 640px) {
-  .site-header-inner { padding: 10px 12px; gap: 8px; }
+  .site-header-inner { padding: 10px 12px; gap: 6px 8px; flex-wrap: wrap; }
   .fn-key { padding: 4px 8px; font-size: 12px; white-space: nowrap; }
   .fn-key .num { margin-right: 4px; }
-  .clock { font-size: 11px; white-space: nowrap; }
+  .clock { font-size: 11px; white-space: nowrap; margin-left: auto; }
+  .header-left { gap: 8px; }
+  .logo { height: 36px; margin: -4px 0; }
 
   .container { padding: 16px 12px 40px; }
   .stats-row { gap: 4px 16px; margin-bottom: 16px; font-size: 12px; }
