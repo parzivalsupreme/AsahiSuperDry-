@@ -70,9 +70,9 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
             </h3>
             <div className="timeline">
               {items.map((e) => (
-                <article className="entry-card" key={e.slug}>
+                <article className="entry-card" key={e.id}>
                   <h4>
-                    <Link href={`/entries/${e.slug}/`}>{e.title}</Link>
+                    <Link href={`/entry/?id=${e.id}`}>{e.title}</Link>
                     {e.tags.length > 0 && (
                       <span className="labels">
                         {e.tags.map((t) => (
@@ -91,8 +91,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
                   <div className="meta">
                     {formatDay(e.day, { weekday: true })}
                     {e.time && ` · ${e.time}`}
-                    {e.mood && ` · ${e.mood}`} · {e.words.toLocaleString()} words ·{' '}
-                    <span className="mono">{e.file}</span>
+                    {e.mood && ` · ${e.mood}`} · {e.words.toLocaleString()} words
                   </div>
                   {e.excerpt && <p>{e.excerpt}</p>}
                 </article>

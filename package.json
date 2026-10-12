@@ -2,16 +2,14 @@
   "name": "commit-journal",
   "version": "1.0.0",
   "private": true,
-  "description": "A personal journal with a GitHub-style theme. Every entry is a Markdown file.",
-  "type": "module",
+  "description": "A private journal with a Bloomberg Terminal theme and a contribution graph, backed by Supabase.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve out",
-    "autopush": "node scripts/autopush.mjs"
+    "start": "npx serve out"
   },
   "dependencies": {
-    "gray-matter": "^4.0.3",
+    "@supabase/supabase-js": "^2.117.3",
     "marked": "^18.1.0",
     "next": "^16.4.0",
     "react": "^19.3.0",

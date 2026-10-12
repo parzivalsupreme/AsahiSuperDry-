@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import config from '../journal.config.js';
 import Clock from './components/Clock';
 import './globals.css';
 
 export const metadata = {
-  title: config.name,
-  description: config.description,
+  title: 'Journal',
+  description: 'A personal journal.',
 };
 
 export default function RootLayout({ children }) {

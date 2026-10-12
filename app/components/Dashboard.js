@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ContributionGraph from './ContributionGraph';
 import EntryFeed from './EntryFeed';
 import { addDays, dayKey, parseDay } from '../../lib/dates';
+import { listEntries } from '../../lib/entries';
 
 function computeStreaks(days, todayKey) {
   const set = new Set(days);
@@ -28,16 +29,20 @@ function computeStreaks(days, todayKey) {
   return { current, longest };
 }
 
-export default function Dashboard({ entries }) {
+export default function Dashboard() {
+  const [entries, setEntries] = useState(null);
+  const [error, setError] = useState('');
   const [today, setToday] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
 
-  // "Today" is resolved in the browser so the static page stays correct after it was built.
-  useEffect(() => setToday(dayKey(new Date())), []);
+  useEffect(() => {
+    setToday(dayKey(new Date()));
+    listEntries().then(setEntries, (e) => setError(e.message));
+  }, []);
 
   const byDay = useMemo(() => {
     const map = new Map();
-    for (const e of entries) {
+    for (const e of entries || []) {
       const d = map.get(e.day) || { count: 0, words: 0 };
       d.count++;
       d.words += e.words;
@@ -47,6 +52,9 @@ export default function Dashboard({ entries }) {
   }, [entries]);
 
   const streaks = useMemo(() => computeStreaks([...byDay.keys()], today), [byDay, today]);
+
+  if (error) return <p className="error">Could not load entries: {error}</p>;
+  if (!entries) return <p className="notice">Loading entries…</p>;
   const totalWords = entries.reduce((sum, e) => sum + e.words, 0);
 
   return (

@@ -1,8 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { dayKey } from '../../lib/dates';
+import { getEntry, saveEntry } from '../../lib/entries';
 
 const DRAFT_KEY = 'journal-draft';
 const TEMPLATE = `## Today
@@ -18,116 +21,95 @@ What happened?
 - [ ] 
 `;
 
-function slugify(text) {
-  return (
-    text
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60) || 'entry'
-  );
+function blankForm() {
+  const now = new Date();
+  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', mood: '', body: TEMPLATE };
 }
 
-// Double-quoted YAML strings accept JSON escaping.
-const yamlString = (s) => JSON.stringify(s);
-
-function buildMarkdown({ title, date, time, tags, mood, body }) {
-  const tagList = tags
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean);
-  const lines = ['---', `title: ${yamlString(title || 'Untitled')}`, `date: ${date}`];
-  if (time) lines.push(`time: ${yamlString(time)}`);
-  if (tagList.length) lines.push(`tags: [${tagList.map(yamlString).join(', ')}]`);
-  if (mood) lines.push(`mood: ${yamlString(mood)}`);
-  lines.push('---', '', body.trim(), '');
-  return lines.join('\n');
-}
-
-export default function Composer({ config }) {
-  const [form, setForm] = useState({ title: '', date: '', time: '', tags: '', mood: '', body: TEMPLATE });
+export default function Composer() {
+  const id = useSearchParams().get('id');
+  const router = useRouter();
+  const [form, setForm] = useState(null);
   const [tab, setTab] = useState('write');
-  const [status, setStatus] = useState('');
-  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  // Fill in today's date/time and restore any saved draft (browser only).
+  // Load the entry being edited, or a saved draft / blank form for a new one.
   useEffect(() => {
-    const now = new Date();
-    const defaults = {
-      date: dayKey(now),
-      time: now.toTimeString().slice(0, 5),
-    };
+    if (id) {
+      getEntry(id).then(
+        (e) =>
+          e
+            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), mood: e.mood || '', body: e.body })
+            : setError('Entry not found.'),
+        (e) => setError(e.message)
+      );
+      return;
+    }
     let draft = null;
     try {
       draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
     } catch {}
-    setForm((f) => ({ ...f, ...defaults, ...(draft || {}) }));
-    setLoaded(true);
-  }, []);
+    setForm({ ...blankForm(), ...(draft || {}) });
+  }, [id]);
 
+  // Autosave drafts of new entries in this browser.
   useEffect(() => {
-    if (!loaded) return;
+    if (!form || id) return;
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
     } catch {}
-  }, [form, loaded]);
+  }, [form, id]);
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
-  const filename = `${form.date || 'YYYY-MM-DD'}-${slugify(form.title)}.md`;
-  const markdown = useMemo(() => buildMarkdown(form), [form]);
   const previewHtml = useMemo(
-    () => (tab === 'preview' ? marked.parse(form.body || '*Nothing to preview*') : ''),
-    [tab, form.body]
+    () => (tab === 'preview' && form ? marked.parse(form.body || '*Nothing to preview*') : ''),
+    [tab, form]
   );
 
-  const flash = (msg) => {
-    setStatus(msg);
-    setTimeout(() => setStatus(''), 2500);
-  };
+  if (error && !form) return <p className="error">{error}</p>;
+  if (!form) return <p className="notice">Loading…</p>;
 
-  const download = () => {
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-    flash(`Downloaded ${filename} — drop it into /${config.entriesDir} and rebuild.`);
-  };
+  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const copy = async () => {
+  const save = async () => {
+    setSaving(true);
+    setError('');
     try {
-      await navigator.clipboard.writeText(markdown);
-      flash('Markdown copied to clipboard.');
-    } catch {
-      flash('Could not copy — try Download instead.');
+      const savedId = await saveEntry(id, {
+        title: form.title.trim() || 'Untitled',
+        day: form.date || dayKey(new Date()),
+        time: form.time || null,
+        tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        mood: form.mood.trim() || null,
+        body: form.body,
+      });
+      if (!id) {
+        try {
+          localStorage.removeItem(DRAFT_KEY);
+        } catch {}
+      }
+      router.push(`/entry/?id=${savedId}`);
+    } catch (e) {
+      setError(e.message);
+      setSaving(false);
     }
   };
 
-  const commitUrl = config.repo
-    ? `https://github.com/${config.repo}/new/${config.branch}/${config.entriesDir}?filename=${encodeURIComponent(
-        filename
-      )}&value=${encodeURIComponent(markdown)}`
-    : null;
-
-  const clear = () => {
-    if (!confirm('Discard this draft?')) return;
+  const discard = () => {
+    if (!confirm(id ? 'Discard your changes?' : 'Discard this draft?')) return;
+    if (id) return router.push(`/entry/?id=${id}`);
     try {
       localStorage.removeItem(DRAFT_KEY);
     } catch {}
-    const now = new Date();
-    setForm({ title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', mood: '', body: TEMPLATE });
+    setForm(blankForm());
   };
 
   return (
     <div style={{ maxWidth: 1012, margin: '0 auto' }}>
       <nav className="breadcrumb">
-        <span>{config.entriesDir}</span>
+        <Link href="/">entries</Link>
         <span className="sep">/</span>
-        <strong className="mono" style={{ fontSize: 16 }}>{filename}</strong>
+        <strong>{id ? 'edit' : 'new'}</strong>
       </nav>
 
       <div className="form-grid">
@@ -160,30 +142,23 @@ export default function Composer({ config }) {
         <div className="tabnav">
           <button className={tab === 'write' ? 'active' : ''} onClick={() => setTab('write')}>Write</button>
           <button className={tab === 'preview' ? 'active' : ''} onClick={() => setTab('preview')}>Preview</button>
-          <button className={tab === 'file' ? 'active' : ''} onClick={() => setTab('file')}>.md file</button>
         </div>
-        {tab === 'write' && (
+        {tab === 'write' ? (
           <textarea className="editor" value={form.body} onChange={set('body')} placeholder="Write in Markdown…" spellCheck />
-        )}
-        {tab === 'preview' && (
+        ) : (
           <div className="preview markdown-body" dangerouslySetInnerHTML={{ __html: previewHtml }} />
         )}
-        {tab === 'file' && <pre className="raw">{markdown}</pre>}
       </div>
 
       <div className="editor-footer">
-        <span className="notice">
-          {status || 'Draft autosaves in this browser. Markdown is supported.'}
+        <span className={error ? 'error' : 'notice'}>
+          {error || (id ? 'Editing a saved entry.' : 'Draft autosaves in this browser until you save.')}
         </span>
         <div className="buttons">
-          <button className="btn" onClick={clear}>Discard</button>
-          <button className="btn" onClick={copy}>Copy</button>
-          <button className="btn" onClick={download}>Download .md</button>
-          {commitUrl && (
-            <a className="btn btn-primary" href={commitUrl} target="_blank" rel="noreferrer">
-              Commit to GitHub
-            </a>
-          )}
+          <button className="btn" onClick={discard}>Discard</button>
+          <button className="btn btn-primary" onClick={save} disabled={saving}>
+            {saving ? 'Saving…' : 'Save entry'}
+          </button>
         </div>
       </div>
     </div>

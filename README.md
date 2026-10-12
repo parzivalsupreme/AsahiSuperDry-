@@ -1,71 +1,42 @@
-# 📓 Commit Journal
+# 📓 Journal
 
-A simple personal journal with a GitHub look — with a Bloomberg Terminal–style amber-on-black theme and a **contribution graph**.
-Built with Next.js and exported as a **fully static website**. Every entry is a plain Markdown file.
+A personal journal with a Bloomberg Terminal–style amber-on-black theme and a
+GitHub-style **contribution graph**. It's a static Next.js site (hosted on GitHub Pages);
+entries are stored in **Supabase**, so writing, editing and deleting happen right in the app —
+no commits or rebuilds.
 
 ## Features
 
-- 🟧 GitHub-style contribution graph (last year + per-year view). Shade = words written that day. Click a square to filter entries.
+- 🟧 Contribution graph (last year + per-year view). Shade = words written that day. Click a square to filter.
 - 🔥 Current & longest writing streaks
-- 📝 Entries are `.md` files in [`entries/`](entries/) with optional frontmatter
+- ✍️ Markdown editor with Write / Preview tabs and an autosaved draft
+- 📄 Entry view with Preview / Markdown toggle, **Download .md**, **Edit** and **Delete**
 - 🔍 Search by title, text or tag
-- 📄 GitHub-style file view with Preview / Code toggle
-- ✍️ Editor with Write / Preview tabs, autosaved draft, and **Download .md** / **Commit to GitHub**
-- 🖥️ Bloomberg Terminal–style amber-on-black theme
 
-## Entry format
+## Setup
 
-Create `entries/YYYY-MM-DD-some-title.md`:
+### 1. Supabase
 
-```md
----
-title: "My day"
-date: 2026-10-11
-time: "21:30"        # optional
-tags: ["life", "work"] # optional
-mood: "😊 good"      # optional
----
+1. Create a project at [supabase.com](https://supabase.com).
+2. **SQL Editor → New query**: paste [`supabase/schema.sql`](supabase/schema.sql) and click **Run**.
+3. **Project Settings → API**: copy the **Project URL** and the **anon public** key.
 
-Write anything in **Markdown**.
-```
+> ⚠️ **There is no sign-in.** The anon key is built into the public site, and the database policy
+> lets that key read, edit and delete every entry. Anyone who finds your site URL can do the same.
+> Don't write anything you wouldn't want public. Never put the `service_role` key in this project.
 
-All frontmatter is optional: the date falls back to the filename prefix, and the title to the first `# heading` (or the filename).
+### 2. GitHub Pages
 
-## Run it
+1. Repo **Settings → Secrets and variables → Actions → New repository secret**, add:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. **Settings → Pages → Source: GitHub Actions**.
+3. Push to `main` (or **Actions → Deploy journal to GitHub Pages → Run workflow**).
+
+### Local development
 
 ```bash
+cp .env.example .env.local   # fill in your Supabase URL and anon key
 npm install
-npm run dev     # http://localhost:3000
-npm run build   # static site in ./out
-npm start       # serve ./out locally
+npm run dev                  # http://localhost:3000
 ```
-
-Set your journal's name, description and repo in [`journal.config.js`](journal.config.js).
-
-## Writing new entries
-
-The site is static, so new entries are added as files and the site is rebuilt:
-
-- **Commit to GitHub** on the *New entry* page opens GitHub's "new file" page pre-filled with your entry — commit it and the Pages workflow rebuilds the site.
-- Or **Download .md**, drop the file into `entries/`, and run `npm run build`.
-
-## Auto-push your entries
-
-```bash
-npm run autopush
-```
-
-Leave it running while you write. Whenever you add, edit or delete a `.md` file in `entries/`,
-it commits just that folder and pushes to GitHub about 5 seconds after you stop typing,
-and the Pages workflow redeploys the site. Change the delay with `AUTOPUSH_DELAY_MS=10000 npm run autopush`.
-
-## Deleting entries
-
-Open an entry and click **Delete**: GitHub opens a page to commit the file's deletion, and the site
-redeploys without it. Locally, just delete the file (with `npm run autopush` running, that's pushed too).
-
-## Deploy to GitHub Pages
-
-A workflow is included at `.github/workflows/deploy.yml`. In your repo go to
-**Settings → Pages → Source: GitHub Actions**, then push to `main`.
-It builds with the correct base path (`/<repo-name>`) automatically.

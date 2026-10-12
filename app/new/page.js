@@ -1,8 +1,12 @@
+import { Suspense } from 'react';
 import Composer from '../components/Composer';
-import config from '../../journal.config.js';
 
-export const metadata = { title: `New entry · ${config.name}` };
+export const metadata = { title: 'Write · Journal' };
 
 export default function NewEntryPage() {
-  return <Composer config={config} />;
+  return (
+    <Suspense>
+      <Composer />
+    </Suspense>
+  );
 }
