@@ -21,11 +21,14 @@ export default function RootLayout({ children }) {
       <body>
         <header className="site-header">
           <div className="site-header-inner">
-            <nav className="fn-keys">
-              <Link href="/" className="fn-key"><span className="num">1)</span>Entries</Link>
-              <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>
-              <Link href="/tags/" className="fn-key"><span className="num">3)</span>Tags</Link>
-            </nav>
+            <div className="header-left">
+              <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="" className="logo" />
+              <nav className="fn-keys">
+                <Link href="/" className="fn-key"><span className="num">1)</span>Entries</Link>
+                <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>
+                <Link href="/tags/" className="fn-key"><span className="num">3)</span>Tags</Link>
+              </nav>
+            </div>
             <Clock />
           </div>
         </header>
