@@ -167,7 +167,7 @@ code, pre, .mono { font-family: var(--mono); }
 
 .graph-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
@@ -499,7 +499,6 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
   /* Graph: keep it inside the screen and let it scroll sideways. */
   .graph-wrap { align-items: stretch; gap: 8px; }
   .graph-box { padding: 12px 8px 8px; }
-  .graph-footer > span:first-child { flex-basis: 100%; }
 
   .activity { margin-top: 24px; }
   .activity-head { flex-wrap: wrap; }

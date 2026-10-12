@@ -156,7 +156,6 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
             )}
           </div>
           <div className="graph-footer">
-            <span>Shade = words written that day. Click a square to filter.</span>
             <span className="legend">
               Less
               {[0, 1, 2, 3, 4].map((l) => (
