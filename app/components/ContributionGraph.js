@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MONTHS, addDays, dayKey, formatDay, ordinal, parseDay } from '../../lib/dates';
 
 const WEEKDAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
@@ -23,6 +23,7 @@ function buildRange(view, todayKey) {
 export default function ContributionGraph({ byDay, today, selectedDay, onSelectDay }) {
   const [view, setView] = useState('last');
   const [tip, setTip] = useState(null);
+  const scrollRef = useRef(null);
 
   const years = useMemo(() => {
     const set = new Set([...byDay.keys()].map((k) => Number(k.slice(0, 4))));
@@ -80,6 +81,12 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
     return { weeks, months, total, totalWords };
   }, [byDay, today, view]);
 
+  // On narrow screens the graph scrolls sideways; start at the most recent weeks.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [graph]);
+
   const heading = graph
     ? `${graph.total} ${graph.total === 1 ? 'entry' : 'entries'} ${view === 'last' ? 'in the last year' : `in ${view}`}`
     : ' ';
@@ -99,7 +106,7 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
       <h2 className="section-title">{heading}</h2>
       <div className="graph-wrap">
         <div className="graph-box">
-          <div className="graph-scroll">
+          <div className="graph-scroll" ref={scrollRef}>
             {graph ? (
               <table className="graph-table" role="grid" aria-label="Journal entry graph">
                 <thead>
