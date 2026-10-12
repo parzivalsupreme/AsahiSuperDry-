@@ -291,6 +291,7 @@ code, pre, .mono { font-family: var(--mono); }
   border: 2px solid var(--bg);
 }
 .entry-card:hover { border-color: var(--border); }
+.card-edit { float: right; margin-left: 8px; }
 .entry-card h4 { margin: 0; font-size: 16px; font-weight: 600; }
 .entry-card .meta { color: var(--fg-muted); font-size: 12px; margin-top: 2px; }
 .entry-card p { margin: 8px 0 0; color: var(--fg-muted); }

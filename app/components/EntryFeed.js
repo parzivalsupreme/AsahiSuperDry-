@@ -71,6 +71,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
             <div className="timeline">
               {items.map((e) => (
                 <article className="entry-card" key={e.id}>
+                  <Link className="btn btn-sm card-edit" href={`/new/?id=${e.id}`}>Edit</Link>
                   <h4>
                     <Link href={`/entry/?id=${e.id}`}>{e.title}</Link>
                     {e.tags.length > 0 && (
