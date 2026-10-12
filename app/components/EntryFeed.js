@@ -91,7 +91,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
                   <div className="meta">
                     {formatDay(e.day, { weekday: true })}
                     {e.time && ` · ${e.time}`}
-                    {e.mood && ` · ${e.mood}`} · {e.words.toLocaleString()} words
+                    {' · '}{e.words.toLocaleString()} words
                   </div>
                   {e.excerpt && <p>{e.excerpt}</p>}
                 </article>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Clock from './components/Clock';
+import SignOut from './components/SignOut';
 import './globals.css';
 
 export const metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
             <nav className="fn-keys">
               <Link href="/" className="fn-key"><span className="num">1)</span>Entries</Link>
               <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>
+              <SignOut />
             </nav>
             <Clock />
           </div>

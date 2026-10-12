@@ -1,18 +1,25 @@
--- Run once in Supabase: Dashboard → SQL Editor → New query → paste → Run.
+-- Run in Supabase: Dashboard → SQL Editor → New query → paste → Run.
+-- Safe to re-run. Create your account first (Authentication → Users → Add user)
+-- so existing entries get assigned to it.
 
 create table if not exists public.entries (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid default auth.uid() references auth.users (id) on delete cascade,
   title text not null default 'Untitled',
   day date not null default current_date,
   time text,
   tags text[] not null default '{}',
-  mood text,
   body text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
-create index if not exists entries_day_idx on public.entries (day desc);
+-- Upgrades from earlier versions of this schema.
+alter table public.entries add column if not exists user_id uuid default auth.uid() references auth.users (id) on delete cascade;
+alter table public.entries drop column if exists mood;
+update public.entries set user_id = (select id from auth.users order by created_at limit 1) where user_id is null;
+
+create index if not exists entries_user_day_idx on public.entries (user_id, day desc);
 
 -- Keep updated_at current on every edit.
 create or replace function public.set_updated_at()
@@ -31,12 +38,12 @@ create trigger entries_set_updated_at
   before update on public.entries
   for each row execute function public.set_updated_at();
 
--- No sign-in: the public anon key may read and write every entry.
--- WARNING: anyone who has your site URL (and therefore the anon key) can read, edit and delete entries.
+-- Only the signed-in owner can read or change entries. Anonymous visitors get nothing.
 alter table public.entries enable row level security;
 
 drop policy if exists "Public access" on public.entries;
-create policy "Public access" on public.entries
-  for all to anon, authenticated
-  using (true)
-  with check (true);
+drop policy if exists "Owner access" on public.entries;
+create policy "Owner access" on public.entries
+  for all to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);

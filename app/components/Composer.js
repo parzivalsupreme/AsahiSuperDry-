@@ -23,7 +23,7 @@ What happened?
 
 function blankForm() {
   const now = new Date();
-  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', mood: '', body: TEMPLATE };
+  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', body: TEMPLATE };
 }
 
 export default function Composer() {
@@ -40,7 +40,7 @@ export default function Composer() {
       getEntry(id).then(
         (e) =>
           e
-            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), mood: e.mood || '', body: e.body })
+            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), body: e.body })
             : setError('Entry not found.'),
         (e) => setError(e.message)
       );
@@ -80,7 +80,6 @@ export default function Composer() {
         day: form.date || dayKey(new Date()),
         time: form.time || null,
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
-        mood: form.mood.trim() || null,
         body: form.body,
       });
       if (!id) {
@@ -122,15 +121,11 @@ export default function Composer() {
           <input id="date" type="date" className="input input-title" value={form.date} onChange={set('date')} />
         </div>
       </div>
-      <div className="form-grid form-grid-3">
+      <div className="form-grid">
         <div className="field">
           <label htmlFor="tags">Tags</label>
           <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
           <div className="hint">Comma separated.</div>
-        </div>
-        <div className="field">
-          <label htmlFor="mood">Mood</label>
-          <input id="mood" className="input" value={form.mood} onChange={set('mood')} placeholder="😊 good" />
         </div>
         <div className="field">
           <label htmlFor="time">Time</label>

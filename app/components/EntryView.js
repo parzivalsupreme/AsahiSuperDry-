@@ -68,7 +68,7 @@ export default function EntryView() {
           <span>
             {formatDay(entry.day, { weekday: true })}
             {entry.time && ` · ${entry.time}`}
-            {entry.mood && ` · ${entry.mood}`} · {entry.words.toLocaleString()} words
+            {' · '}{entry.words.toLocaleString()} words
           </span>
           <div className="actions">
             <button className="btn btn-sm" onClick={download}>Download .md</button>
