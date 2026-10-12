@@ -62,8 +62,8 @@ export default function Dashboard() {
       <div className="stats-row">
         <span><strong>{entries.length}</strong> entries</span>
         <span><strong>{totalWords.toLocaleString()}</strong> words</span>
-        <span>🔥 Current streak: <strong>{streaks.current}</strong> {streaks.current === 1 ? 'day' : 'days'}</span>
-        <span>🏆 Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
+        <span>Current streak: <strong>{streaks.current}</strong> {streaks.current === 1 ? 'day' : 'days'}</span>
+        <span>Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
       </div>
 
       <ContributionGraph
