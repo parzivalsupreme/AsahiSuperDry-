@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { formatDay } from '../../lib/dates';
 import { deleteEntry, getEntry, placeLine, slugify, toMarkdown } from '../../lib/entries';
-import { usePhotoMarkdown } from '../../lib/photos';
+import { photoPaths, usePhotoMarkdown } from '../../lib/photos';
 
 export default function EntryView() {
   const id = useSearchParams().get('id');
@@ -40,9 +40,11 @@ export default function EntryView() {
   };
 
   const remove = async () => {
-    if (!confirm(`Delete "${entry.title}"? This can't be undone.`)) return;
+    const photos = photoPaths(entry.body).length;
+    const note = photos ? ` Its ${photos === 1 ? 'photo' : `${photos} photos`} will be deleted too.` : '';
+    if (!confirm(`Delete "${entry.title}"?${note} This can't be undone.`)) return;
     try {
-      await deleteEntry(entry.id);
+      await deleteEntry(entry);
       router.push('/');
     } catch (e) {
       setError(e.message);

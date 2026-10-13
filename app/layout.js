@@ -40,6 +40,7 @@ export default function RootLayout({ children }) {
                 <RandomKey />
                 <Link href="/stats/" className="fn-key"><span className="num">5)</span>Stats</Link>
                 <Link href="/habits/" className="fn-key"><span className="num">6)</span>Habits</Link>
+                <Link href="/photos/" className="fn-key"><span className="num">7)</span>Photos</Link>
               </nav>
             </div>
             <div className="header-right">
