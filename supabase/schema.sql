@@ -47,3 +47,14 @@ create policy "Owner access" on public.entries
   for all to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
+
+-- Photos: a private bucket. Each user can only touch files in their own folder (<user id>/...).
+insert into storage.buckets (id, name, public)
+values ('photos', 'photos', false)
+on conflict (id) do nothing;
+
+drop policy if exists "Own photos" on storage.objects;
+create policy "Own photos" on storage.objects
+  for all to authenticated
+  using (bucket_id = 'photos' and (storage.foldername(name))[1] = (select auth.uid())::text)
+  with check (bucket_id = 'photos' and (storage.foldername(name))[1] = (select auth.uid())::text);

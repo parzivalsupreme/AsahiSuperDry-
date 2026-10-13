@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { dayKey } from '../../lib/dates';
 import { getEntry, saveEntry } from '../../lib/entries';
+import { uploadPhoto, usePhotoMarkdown } from '../../lib/photos';
 
 const DRAFT_KEY = 'journal-draft';
 const TEMPLATE = `## Today
@@ -33,6 +34,10 @@ export default function Composer() {
   const [tab, setTab] = useState('write');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(0);
+  const editorRef = useRef(null);
+  const fileRef = useRef(null);
+  const saveRef = useRef(null);
 
   // Load the entry being edited, or a saved draft / blank form for a new one.
   useEffect(() => {
@@ -61,17 +66,65 @@ export default function Composer() {
     } catch {}
   }, [form, id]);
 
+  const previewBody = usePhotoMarkdown(tab === 'preview' && form ? form.body : '');
   const previewHtml = useMemo(
-    () => (tab === 'preview' && form ? marked.parse(form.body || '*Nothing to preview*') : ''),
-    [tab, form]
+    () => (tab === 'preview' ? marked.parse(previewBody || '*Nothing to preview*') : ''),
+    [tab, previewBody]
   );
+
+  // Ctrl/Cmd+S saves from anywhere on the page.
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveRef.current?.();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   if (error && !form) return <p className="error">{error}</p>;
   if (!form) return <p className="notice">Loading…</p>;
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
+  // Uploads images and drops their Markdown in at the cursor.
+  const addPhotos = async (files) => {
+    const images = [...files].filter((f) => f.type.startsWith('image/'));
+    if (!images.length) return;
+    const el = editorRef.current;
+    const at = el ? el.selectionStart : form.body.length;
+    setUploading((n) => n + images.length);
+    setError('');
+    try {
+      const snippets = await Promise.all(images.map(uploadPhoto));
+      const text = `\n${snippets.join('\n')}\n`;
+      setForm((f) => ({ ...f, body: f.body.slice(0, at) + text + f.body.slice(at) }));
+      setTab('write');
+    } catch (e) {
+      setError(`Photo upload failed: ${e.message}`);
+    } finally {
+      setUploading((n) => n - images.length);
+    }
+  };
+
+  const onPaste = (e) => {
+    const files = [...e.clipboardData.files];
+    if (files.some((f) => f.type.startsWith('image/'))) {
+      e.preventDefault();
+      addPhotos(files);
+    }
+  };
+
+  const onDrop = (e) => {
+    if (!e.dataTransfer.files.length) return;
+    e.preventDefault();
+    addPhotos(e.dataTransfer.files);
+  };
+
   const save = async () => {
+    if (saving) return;
     setSaving(true);
     setError('');
     try {
@@ -93,6 +146,8 @@ export default function Composer() {
       setSaving(false);
     }
   };
+
+  saveRef.current = save;
 
   const discard = () => {
     if (!confirm(id ? 'Discard your changes?' : 'Discard this draft?')) return;
@@ -137,9 +192,33 @@ export default function Composer() {
         <div className="tabnav">
           <button className={tab === 'write' ? 'active' : ''} onClick={() => setTab('write')}>Write</button>
           <button className={tab === 'preview' ? 'active' : ''} onClick={() => setTab('preview')}>Preview</button>
+          <button className="tab-action" onClick={() => fileRef.current?.click()} disabled={uploading > 0}>
+            {uploading ? 'Uploading…' : '+ Photo'}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={(e) => {
+              addPhotos(e.target.files);
+              e.target.value = '';
+            }}
+          />
         </div>
         {tab === 'write' ? (
-          <textarea className="editor" value={form.body} onChange={set('body')} placeholder="Write in Markdown…" spellCheck />
+          <textarea
+            ref={editorRef}
+            className="editor"
+            value={form.body}
+            onChange={set('body')}
+            onPaste={onPaste}
+            onDrop={onDrop}
+            onDragOver={(e) => e.preventDefault()}
+            placeholder="Write in Markdown… (paste or drop photos here)"
+            spellCheck
+          />
         ) : (
           <div className="preview markdown-body" dangerouslySetInnerHTML={{ __html: previewHtml }} />
         )}
@@ -147,7 +226,7 @@ export default function Composer() {
 
       <div className="editor-footer">
         <span className={error ? 'error' : 'notice'}>
-          {error || (id ? 'Editing a saved entry.' : 'Draft autosaves in this browser until you save.')}
+          {error || (id ? 'Editing a saved entry. Ctrl+S to save.' : 'Draft autosaves in this browser until you save. Ctrl+S to save.')}
         </span>
         <div className="buttons">
           <button className="btn" onClick={discard}>Discard</button>
