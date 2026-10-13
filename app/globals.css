@@ -369,8 +369,9 @@ code, pre, .mono { font-family: var(--mono); }
 
 
 /* ---------- Editor (new entry) ---------- */
-.form-grid { display: grid; grid-template-columns: 1fr 180px; gap: 16px; margin-bottom: 16px; }
-@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.form-row { margin-bottom: 16px; }
+.when-grid { display: grid; grid-template-columns: 180px 150px 1fr; gap: 16px; }
+@media (max-width: 640px) { .when-grid { grid-template-columns: 1fr 1fr; } .when-grid > :last-child { grid-column: 1 / -1; } }
 .field label { display: block; font-weight: 600; margin-bottom: 6px; }
 .field .hint { color: var(--fg-muted); font-size: 12px; margin-top: 4px; }
 .input {
@@ -767,8 +768,13 @@ kbd {
 }
 
 /* ---------- Place & weather stamp ---------- */
-.stamp { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 16px; }
-.stamp-label { font-weight: 600; }
+.stamp { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; text-align: left; }
+.stamp span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stamp button { font: inherit; font-size: 16px; line-height: 1; color: var(--fg-muted); background: none; border: none; cursor: pointer; padding: 0; }
+.stamp button:hover { color: var(--fg); }
+.stamp-add { color: var(--accent); cursor: pointer; }
+.stamp-add:hover { background: var(--btn-hover); }
+.stamp-add:disabled { cursor: wait; opacity: 0.7; }
 
 /* ---------- Command bar ---------- */
 .cmd-overlay { align-items: flex-start; padding-top: 12vh; }
@@ -786,6 +792,7 @@ kbd {
 .cmd-empty { color: var(--fg-muted); cursor: default; }
 .cmd-foot { padding: 6px 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--fg-muted); }
 .cmd-key {
+  white-space: nowrap;
   font: inherit;
   font-size: 11px;
   padding: 1px 8px;
@@ -795,3 +802,11 @@ kbd {
   cursor: pointer;
 }
 .cmd-key:hover { color: var(--fg); background: var(--btn-hover); }
+
+/* ---------- Header place & weather ---------- */
+.clock-place { color: var(--fg); }
+.clock-locate { font: inherit; margin-left: 8px; padding: 0; color: var(--fg-muted); background: none; border: none; cursor: pointer; }
+.clock-locate:hover { color: var(--accent); }
+@media (max-width: 640px) {
+  .clock { white-space: normal; text-align: right; }
+}

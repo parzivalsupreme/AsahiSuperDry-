@@ -190,40 +190,39 @@ export default function Composer() {
         <strong>{id ? 'edit' : 'new'}</strong>
       </nav>
 
-      <div className="form-grid">
-        <div className="field">
-          <label htmlFor="title">Title</label>
-          <input id="title" className="input input-title" value={form.title} onChange={set('title')} placeholder="What's on your mind?" autoFocus />
-        </div>
+      <div className="field form-row">
+        <label htmlFor="title">Title</label>
+        <input id="title" className="input input-title" value={form.title} onChange={set('title')} placeholder="What's on your mind?" autoFocus />
+      </div>
+
+      <div className="when-grid form-row">
         <div className="field">
           <label htmlFor="date">Date</label>
-          <input id="date" type="date" className="input input-title" value={form.date} onChange={set('date')} />
-        </div>
-      </div>
-      <div className="form-grid">
-        <div className="field">
-          <label htmlFor="tags">Tags</label>
-          <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
-          <div className="hint">Comma separated.</div>
+          <input id="date" type="date" className="input" value={form.date} onChange={set('date')} />
         </div>
         <div className="field">
           <label htmlFor="time">Time</label>
           <input id="time" type="time" className="input" value={form.time} onChange={set('time')} />
         </div>
+        <div className="field">
+          <label>Place &amp; weather</label>
+          {form.place || form.weather ? (
+            <div className="input stamp">
+              <span>{[form.place, form.weather].filter(Boolean).join(' · ')}</span>
+              <button onClick={() => setForm((f) => ({ ...f, place: '', weather: '' }))} aria-label="Remove place and weather">×</button>
+            </div>
+          ) : (
+            <button className="input stamp stamp-add" onClick={stamp} disabled={locating}>
+              {locating ? 'Locating…' : '+ Add place & weather'}
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="stamp">
-        <span className="stamp-label">Place &amp; weather</span>
-        {form.place || form.weather ? (
-          <span className="filter-chip">
-            {[form.place, form.weather].filter(Boolean).join(' · ')}
-            <button onClick={() => setForm((f) => ({ ...f, place: '', weather: '' }))} aria-label="Remove place and weather">×</button>
-          </span>
-        ) : (
-          <button className="btn btn-sm" onClick={stamp} disabled={locating}>
-            {locating ? 'Locating…' : '+ Add place & weather'}
-          </button>
-        )}
+      <div className="field form-row">
+        <label htmlFor="tags">Tags</label>
+        <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
+        <div className="hint">Comma separated.</div>
       </div>
 
       <div className="file-box">
