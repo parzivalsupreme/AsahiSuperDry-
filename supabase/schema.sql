@@ -58,3 +58,7 @@ create policy "Own photos" on storage.objects
   for all to authenticated
   using (bucket_id = 'photos' and (storage.foldername(name))[1] = (select auth.uid())::text)
   with check (bucket_id = 'photos' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- Place and weather stamped when an entry is written (both optional).
+alter table public.entries add column if not exists place text;
+alter table public.entries add column if not exists weather text;
