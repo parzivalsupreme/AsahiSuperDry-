@@ -23,7 +23,7 @@ function SignIn() {
       <h2 className="section-title">Sign in</h2>
       <div className="field">
         <label htmlFor="key">Key</label>
-        <input id="key" className="input" placeholder="key or email" value={key} onChange={(e) => setKey(e.target.value)} autoCapitalize="none" autoComplete="username" required autoFocus />
+        <input id="key" className="input" value={key} onChange={(e) => setKey(e.target.value)} autoCapitalize="none" autoComplete="username" required autoFocus />
       </div>
       <div className="field">
         <label htmlFor="password">Password</label>
