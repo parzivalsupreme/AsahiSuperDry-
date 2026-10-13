@@ -11,6 +11,7 @@ const KEYS = [
   ['4', 'Random entry'],
   ['5', 'Stats'],
   ['6', 'Habits'],
+  ['7', 'Photos'],
   ['N', 'New entry'],
   ['Ctrl+K', 'Command bar'],
   ['/', 'Search'],
@@ -47,6 +48,7 @@ export default function Shortcuts() {
         4: () => openRandomEntry(router, new URLSearchParams(location.search).get('id')),
         5: () => router.push('/stats/'),
         6: () => router.push('/habits/'),
+        7: () => router.push('/photos/'),
         '?': () => setHelp((h) => !h),
         '/': () => document.querySelector('.search')?.focus(),
       }[e.key.toLowerCase()];
