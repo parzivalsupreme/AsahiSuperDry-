@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { formatDay } from '../../lib/dates';
 import { deleteEntry, getEntry, slugify, toMarkdown } from '../../lib/entries';
+import { usePhotoMarkdown } from '../../lib/photos';
 
 export default function EntryView() {
   const id = useSearchParams().get('id');
@@ -19,7 +20,8 @@ export default function EntryView() {
     getEntry(id).then(setEntry, (e) => setError(e.message));
   }, [id]);
 
-  const html = useMemo(() => (entry ? marked.parse(entry.body) : ''), [entry]);
+  const body = usePhotoMarkdown(entry?.body);
+  const html = useMemo(() => (body ? marked.parse(body) : ''), [body]);
 
   if (error) return <p className="error">{error}</p>;
   if (entry === undefined) return <p className="notice">Loading…</p>;

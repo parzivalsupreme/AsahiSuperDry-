@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ContributionGraph from './ContributionGraph';
 import EntryFeed from './EntryFeed';
+import ExportButton from './ExportButton';
 import { addDays, dayKey, parseDay } from '../../lib/dates';
 import { listEntries } from '../../lib/entries';
 
@@ -64,6 +65,9 @@ export default function Dashboard() {
         <span><strong>{totalWords.toLocaleString()}</strong> words</span>
         <span>Current streak: <strong>{streaks.current}</strong> {streaks.current === 1 ? 'day' : 'days'}</span>
         <span>Longest streak: <strong>{streaks.longest}</strong> {streaks.longest === 1 ? 'day' : 'days'}</span>
+        <span className="stats-actions">
+          <ExportButton entries={entries} />
+        </span>
       </div>
 
       <ContributionGraph

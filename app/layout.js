@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import Clock from './components/Clock';
+import RandomKey from './components/RandomKey';
+import Shortcuts from './components/Shortcuts';
 import './globals.css';
 
 export const metadata = {
@@ -27,12 +29,14 @@ export default function RootLayout({ children }) {
                 <Link href="/" className="fn-key"><span className="num">1)</span>Entries</Link>
                 <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>
                 <Link href="/tags/" className="fn-key"><span className="num">3)</span>Tags</Link>
+                <RandomKey />
               </nav>
             </div>
             <Clock />
           </div>
         </header>
         <main className="container">{children}</main>
+        <Shortcuts />
       </body>
     </html>
   );
