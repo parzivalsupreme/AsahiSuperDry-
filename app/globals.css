@@ -819,7 +819,7 @@ kbd {
 
 /* ---------- Habits ---------- */
 .habit-picks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.habit-new { width: 180px; padding: 3px 10px; font-size: 12px; }
+.habit-new { width: 220px; padding: 3px 10px; font-size: 12px; }
 .entry-habits { margin: 0 0 16px; font-size: 12px; color: var(--fg-muted); white-space: pre-wrap; }
 
 .habits { display: flex; flex-direction: column; gap: 16px; }
