@@ -5,12 +5,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { dayKey } from '../../lib/dates';
-import { getEntry, recentHabits, saveEntry } from '../../lib/entries';
+import { getEntry, saveEntry } from '../../lib/entries';
 import { uploadPhoto, usePhotoMarkdown } from '../../lib/photos';
 import { locationAllowed, stampPlaceAndWeather } from '../../lib/place';
 
 const DRAFT_KEY = 'journal-draft';
-const STARTER_HABITS = ['exercise', 'water', 'read', 'meditate'];
 const TEMPLATE = `## Today
 
 What happened?
@@ -38,7 +37,6 @@ export default function Composer() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(0);
   const [locating, setLocating] = useState(false);
-  const [knownHabits, setKnownHabits] = useState([]);
   const [newHabit, setNewHabit] = useState('');
   const editorRef = useRef(null);
   const fileRef = useRef(null);
@@ -70,10 +68,6 @@ export default function Composer() {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
     } catch {}
   }, [form, id]);
-
-  useEffect(() => {
-    recentHabits().then(setKnownHabits);
-  }, []);
 
   const stamp = async () => {
     setLocating(true);
@@ -182,14 +176,12 @@ export default function Composer() {
   saveRef.current = save;
 
   const habits = form.habits || [];
-  const habitOptions = [...new Set([...(knownHabits.length ? knownHabits : STARTER_HABITS), ...habits])];
-  const toggleHabit = (h) =>
-    setForm((f) => ({ ...f, habits: (f.habits || []).includes(h) ? f.habits.filter((x) => x !== h) : [...(f.habits || []), h] }));
+  const removeHabit = (h) => setForm((f) => ({ ...f, habits: f.habits.filter((x) => x !== h) }));
   const addHabit = (e) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
     const h = newHabit.trim().toLowerCase();
-    if (h && !habits.includes(h)) toggleHabit(h);
+    if (h && !habits.includes(h)) setForm((f) => ({ ...f, habits: [...habits, h] }));
     setNewHabit('');
   };
 
@@ -248,9 +240,9 @@ export default function Composer() {
       <div className="field form-row">
         <label>Habits</label>
         <div className="habit-picks">
-          {habitOptions.map((h) => (
-            <button key={h} className={`tag-pill${habits.includes(h) ? ' active' : ''}`} aria-pressed={habits.includes(h)} onClick={() => toggleHabit(h)}>
-              {habits.includes(h) ? '✓' : '○'} {h}
+          {habits.map((h) => (
+            <button key={h} className="tag-pill active" onClick={() => removeHabit(h)} title={`Remove ${h}`}>
+              ✓ {h} ×
             </button>
           ))}
           <input
@@ -258,7 +250,7 @@ export default function Composer() {
             value={newHabit}
             onChange={(e) => setNewHabit(e.target.value)}
             onKeyDown={addHabit}
-            placeholder="+ new habit, Enter"
+            placeholder="Type a habit, press Enter"
             aria-label="Add a habit"
           />
         </div>
