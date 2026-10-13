@@ -88,6 +88,11 @@ export default function EntryView() {
                 ))}
               </div>
             )}
+            {entry.habits.length > 0 && (
+              <p className="entry-habits">
+                <Link href="/habits/">Habits</Link>: {entry.habits.map((h) => `✓ ${h}`).join('  ')}
+              </p>
+            )}
             <div className="markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
           </div>
         ) : (

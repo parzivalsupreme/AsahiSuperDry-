@@ -62,3 +62,6 @@ create policy "Own photos" on storage.objects
 -- Place and weather stamped when an entry is written (both optional).
 alter table public.entries add column if not exists place text;
 alter table public.entries add column if not exists weather text;
+
+-- Habits ticked off with each entry.
+alter table public.entries add column if not exists habits text[] not null default '{}';

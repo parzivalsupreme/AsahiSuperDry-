@@ -5,11 +5,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { dayKey } from '../../lib/dates';
-import { getEntry, saveEntry } from '../../lib/entries';
+import { getEntry, recentHabits, saveEntry } from '../../lib/entries';
 import { uploadPhoto, usePhotoMarkdown } from '../../lib/photos';
 import { locationAllowed, stampPlaceAndWeather } from '../../lib/place';
 
 const DRAFT_KEY = 'journal-draft';
+const STARTER_HABITS = ['exercise', 'water', 'read', 'meditate'];
 const TEMPLATE = `## Today
 
 What happened?
@@ -25,7 +26,7 @@ What happened?
 
 function blankForm() {
   const now = new Date();
-  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', body: TEMPLATE, place: '', weather: '' };
+  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', body: TEMPLATE, place: '', weather: '', habits: [] };
 }
 
 export default function Composer() {
@@ -37,6 +38,8 @@ export default function Composer() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(0);
   const [locating, setLocating] = useState(false);
+  const [knownHabits, setKnownHabits] = useState([]);
+  const [newHabit, setNewHabit] = useState('');
   const editorRef = useRef(null);
   const fileRef = useRef(null);
   const saveRef = useRef(null);
@@ -47,7 +50,7 @@ export default function Composer() {
       getEntry(id).then(
         (e) =>
           e
-            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), body: e.body, place: e.place || '', weather: e.weather || '' })
+            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), body: e.body, place: e.place || '', weather: e.weather || '', habits: e.habits })
             : setError('Entry not found.'),
         (e) => setError(e.message)
       );
@@ -67,6 +70,10 @@ export default function Composer() {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
     } catch {}
   }, [form, id]);
+
+  useEffect(() => {
+    recentHabits().then(setKnownHabits);
+  }, []);
 
   const stamp = async () => {
     setLocating(true);
@@ -158,6 +165,7 @@ export default function Composer() {
         body: form.body,
         place: form.place || null,
         weather: form.weather || null,
+        habits: form.habits || [],
       });
       if (!id) {
         try {
@@ -172,6 +180,18 @@ export default function Composer() {
   };
 
   saveRef.current = save;
+
+  const habits = form.habits || [];
+  const habitOptions = [...new Set([...(knownHabits.length ? knownHabits : STARTER_HABITS), ...habits])];
+  const toggleHabit = (h) =>
+    setForm((f) => ({ ...f, habits: (f.habits || []).includes(h) ? f.habits.filter((x) => x !== h) : [...(f.habits || []), h] }));
+  const addHabit = (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const h = newHabit.trim().toLowerCase();
+    if (h && !habits.includes(h)) toggleHabit(h);
+    setNewHabit('');
+  };
 
   const discard = () => {
     if (!confirm(id ? 'Discard your changes?' : 'Discard this draft?')) return;
@@ -223,6 +243,25 @@ export default function Composer() {
         <label htmlFor="tags">Tags</label>
         <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
         <div className="hint">Comma separated.</div>
+      </div>
+
+      <div className="field form-row">
+        <label>Habits</label>
+        <div className="habit-picks">
+          {habitOptions.map((h) => (
+            <button key={h} className={`tag-pill${habits.includes(h) ? ' active' : ''}`} aria-pressed={habits.includes(h)} onClick={() => toggleHabit(h)}>
+              {habits.includes(h) ? '✓' : '○'} {h}
+            </button>
+          ))}
+          <input
+            className="input habit-new"
+            value={newHabit}
+            onChange={(e) => setNewHabit(e.target.value)}
+            onKeyDown={addHabit}
+            placeholder="+ new habit, Enter"
+            aria-label="Add a habit"
+          />
+        </div>
       </div>
 
       <div className="file-box">
