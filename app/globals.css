@@ -61,13 +61,14 @@ code, pre, .mono { font-family: var(--mono); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
 .header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .logo { height: 48px; width: auto; display: block; margin: -6px 0; }
 .logo-link { display: block; flex: none; }
 .logo-link:hover .logo { filter: brightness(1.15); }
-.fn-keys { display: flex; gap: 2px; }
+.fn-keys { display: flex; flex-wrap: wrap; gap: 2px; }
 .fn-key {
   color: #000;
   background: var(--btn-primary);
@@ -76,6 +77,10 @@ code, pre, .mono { font-family: var(--mono); }
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
 .fn-key:hover { background: var(--accent); text-decoration: none; }
 .fn-key .num { margin-right: 6px; }
@@ -498,8 +503,7 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
 /* ---------- Mobile ---------- */
 @media (max-width: 640px) {
   .site-header-inner { padding: 10px 12px; gap: 6px 8px; flex-wrap: wrap; }
-  .fn-key { padding: 4px 8px; font-size: 12px; white-space: nowrap; }
-  .fn-keys { flex-wrap: wrap; }
+  .fn-key { padding: 4px 8px; font-size: 12px; }
   .fn-key .num { display: none; } /* number keys are for keyboards */
   .clock { font-size: 11px; white-space: nowrap; margin-left: auto; }
   .header-left { gap: 8px; }
@@ -590,7 +594,7 @@ h1, h2, h3, h4, .section-title { text-transform: uppercase; letter-spacing: 0.04
 }
 
 /* ---------- Random key, shortcuts help, photos ---------- */
-button.fn-key { font-family: inherit; border: none; cursor: pointer; line-height: inherit; }
+button.fn-key { font-family: inherit; border: none; cursor: pointer; margin: 0; }
 .stats-actions { margin-left: auto; }
 
 .kbd-overlay {
@@ -748,7 +752,7 @@ kbd {
     radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%);
 }
 
-.header-right { display: flex; align-items: center; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
 .theme-controls { display: inline-flex; border: 1px solid var(--border); }
 .theme-controls button {
   font: inherit;
