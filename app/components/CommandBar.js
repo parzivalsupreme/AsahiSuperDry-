@@ -53,6 +53,7 @@ export default function CommandBar() {
       { kind: 'Page', label: 'Stats', hint: '5', run: go('/stats/') },
       { kind: 'Page', label: 'Habits', hint: '6', run: go('/habits/') },
       { kind: 'Page', label: 'Photos', hint: '7', run: go('/photos/') },
+      { kind: 'Page', label: 'Places', hint: '8', run: go('/places/') },
       ...THEMES.map((t) => ({ kind: 'Theme', label: `Theme: ${t}`, run: () => setTheme(t) })),
       { kind: 'Theme', label: 'Toggle CRT scanlines', run: toggleCrt },
       { kind: 'Help', label: 'Keyboard shortcuts', hint: '?', run: () => window.dispatchEvent(new Event('journal-help')) },

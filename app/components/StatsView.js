@@ -2,48 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import Delta from './Delta';
 import { dayKey } from '../../lib/dates';
 import { listEntries } from '../../lib/entries';
 import { computeStats } from '../../lib/stats';
 
 const fmt = (n) => n.toLocaleString();
-
-// ▲/▼ with the change, so direction never relies on color alone.
-function Delta({ c }) {
-  if (!c.diff) return <span className="delta flat">■ 0</span>;
-  const up = c.diff > 0;
-  const pct = c.pct === null ? '' : ` (${up ? '+' : ''}${(c.pct * 100).toFixed(0)}%)`;
-  return (
-    <span className={`delta ${up ? 'up' : 'down'}`}>
-      {up ? '▲ +' : '▼ '}{fmt(c.diff)}{pct}
-    </span>
-  );
-}
-
-function Ticker({ s }) {
-  const items = [
-    ['WORDS 30D', fmt(s.words30.now), s.words30],
-    ['ENTRIES 30D', fmt(s.entries30.now), s.entries30],
-    ['DAYS 30D', fmt(s.days30.now), s.days30],
-    ['TOTAL WORDS', fmt(s.totalWords)],
-    ['BEST DAY', s.bestWeekday.count ? s.bestWeekday.name.toUpperCase() : '—'],
-    ['TOP TAG', s.topTag?.toUpperCase() || '—'],
-    ['TOP WORD', s.topWords[0]?.[0].toUpperCase() || '—'],
-  ];
-  const row = items.map(([label, value, c]) => (
-    <span className="tick" key={label}>
-      <b>{label}</b> {value} {c && <Delta c={c} />}
-    </span>
-  ));
-  return (
-    <div className="ticker">
-      <div className="ticker-track">
-        <div>{row}</div>
-        <div aria-hidden="true">{row}</div>
-      </div>
-    </div>
-  );
-}
 
 function Tile({ label, value, children }) {
   return (
@@ -94,8 +58,6 @@ export default function StatsView() {
 
   return (
     <div className="page">
-      <Ticker s={s} />
-
       <div className="tiles">
         <Tile label="Words · 30 days" value={fmt(s.words30.now)}><Delta c={s.words30} /></Tile>
         <Tile label="Entries · 30 days" value={fmt(s.entries30.now)}><Delta c={s.entries30} /></Tile>
