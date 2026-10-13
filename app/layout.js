@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import Clock from './components/Clock';
+import CommandBar from './components/CommandBar';
+import CommandKey from './components/CommandKey';
 import RandomKey from './components/RandomKey';
 import Shortcuts from './components/Shortcuts';
+import ThemeControls from './components/ThemeControls';
+import { THEME_BOOT } from '../lib/theme';
 import './globals.css';
 
 export const metadata = {
@@ -11,8 +15,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -33,11 +38,16 @@ export default function RootLayout({ children }) {
                 <Link href="/stats/" className="fn-key"><span className="num">5)</span>Stats</Link>
               </nav>
             </div>
-            <Clock />
+            <div className="header-right">
+              <CommandKey />
+              <ThemeControls />
+              <Clock />
+            </div>
           </div>
         </header>
         <main className="container">{children}</main>
         <Shortcuts />
+        <CommandBar />
       </body>
     </html>
   );

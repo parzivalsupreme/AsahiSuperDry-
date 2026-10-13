@@ -11,6 +11,7 @@ const KEYS = [
   ['4', 'Random entry'],
   ['5', 'Stats'],
   ['N', 'New entry'],
+  ['Ctrl+K', 'Command bar'],
   ['/', 'Search'],
   ['Ctrl+S', 'Save entry (while writing)'],
   ['Esc', 'Leave a text box'],
@@ -53,8 +54,13 @@ export default function Shortcuts() {
         go();
       }
     };
+    const showHelp = () => setHelp(true);
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('journal-help', showHelp);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('journal-help', showHelp);
+    };
   }, [router]);
 
   if (!help) return null;

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { MONTHS_LONG, formatDay, parseDay } from '../../lib/dates';
+import { placeLine } from '../../lib/entries';
 
 export default function EntryFeed({ entries, selectedDay, onClearDay }) {
   const [query, setQuery] = useState('');
@@ -86,6 +87,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
                   <div className="meta">
                     {formatDay(e.day, { weekday: true })}
                     {e.time && ` · ${e.time}`}
+                    {placeLine(e) && ` · ${placeLine(e)}`}
                     {' · '}{e.words.toLocaleString()} words
                   </div>
                   {e.excerpt && <p>{e.excerpt}</p>}

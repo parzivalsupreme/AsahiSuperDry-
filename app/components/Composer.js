@@ -7,6 +7,7 @@ import { marked } from 'marked';
 import { dayKey } from '../../lib/dates';
 import { getEntry, saveEntry } from '../../lib/entries';
 import { uploadPhoto, usePhotoMarkdown } from '../../lib/photos';
+import { locationAllowed, stampPlaceAndWeather } from '../../lib/place';
 
 const DRAFT_KEY = 'journal-draft';
 const TEMPLATE = `## Today
@@ -24,7 +25,7 @@ What happened?
 
 function blankForm() {
   const now = new Date();
-  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', body: TEMPLATE };
+  return { title: '', date: dayKey(now), time: now.toTimeString().slice(0, 5), tags: '', body: TEMPLATE, place: '', weather: '' };
 }
 
 export default function Composer() {
@@ -35,6 +36,7 @@ export default function Composer() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(0);
+  const [locating, setLocating] = useState(false);
   const editorRef = useRef(null);
   const fileRef = useRef(null);
   const saveRef = useRef(null);
@@ -45,7 +47,7 @@ export default function Composer() {
       getEntry(id).then(
         (e) =>
           e
-            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), body: e.body })
+            ? setForm({ title: e.title, date: e.day, time: e.time || '', tags: e.tags.join(', '), body: e.body, place: e.place || '', weather: e.weather || '' })
             : setError('Entry not found.'),
         (e) => setError(e.message)
       );
@@ -65,6 +67,26 @@ export default function Composer() {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
     } catch {}
   }, [form, id]);
+
+  const stamp = async () => {
+    setLocating(true);
+    try {
+      const { place, weather } = await stampPlaceAndWeather();
+      setForm((f) => ({ ...f, place: place || '', weather: weather || '' }));
+    } catch (e) {
+      setError(`Couldn't get place & weather: ${e.message}`);
+    }
+    setLocating(false);
+  };
+
+  // New entries get stamped once, automatically, when location access is already allowed.
+  const autoStamped = useRef(false);
+  const needsStamp = !id && form && !form.place && !form.weather;
+  useEffect(() => {
+    if (!needsStamp || autoStamped.current) return;
+    autoStamped.current = true;
+    locationAllowed().then((ok) => ok && stamp());
+  }, [needsStamp]);
 
   const previewBody = usePhotoMarkdown(tab === 'preview' && form ? form.body : '');
   const previewHtml = useMemo(
@@ -134,6 +156,8 @@ export default function Composer() {
         time: form.time || null,
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
         body: form.body,
+        place: form.place || null,
+        weather: form.weather || null,
       });
       if (!id) {
         try {
@@ -166,26 +190,39 @@ export default function Composer() {
         <strong>{id ? 'edit' : 'new'}</strong>
       </nav>
 
-      <div className="form-grid">
-        <div className="field">
-          <label htmlFor="title">Title</label>
-          <input id="title" className="input input-title" value={form.title} onChange={set('title')} placeholder="What's on your mind?" autoFocus />
-        </div>
+      <div className="field form-row">
+        <label htmlFor="title">Title</label>
+        <input id="title" className="input input-title" value={form.title} onChange={set('title')} placeholder="What's on your mind?" autoFocus />
+      </div>
+
+      <div className="when-grid form-row">
         <div className="field">
           <label htmlFor="date">Date</label>
-          <input id="date" type="date" className="input input-title" value={form.date} onChange={set('date')} />
-        </div>
-      </div>
-      <div className="form-grid">
-        <div className="field">
-          <label htmlFor="tags">Tags</label>
-          <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
-          <div className="hint">Comma separated.</div>
+          <input id="date" type="date" className="input" value={form.date} onChange={set('date')} />
         </div>
         <div className="field">
           <label htmlFor="time">Time</label>
           <input id="time" type="time" className="input" value={form.time} onChange={set('time')} />
         </div>
+        <div className="field">
+          <label>Place &amp; weather</label>
+          {form.place || form.weather ? (
+            <div className="input stamp">
+              <span>{[form.place, form.weather].filter(Boolean).join(' · ')}</span>
+              <button onClick={() => setForm((f) => ({ ...f, place: '', weather: '' }))} aria-label="Remove place and weather">×</button>
+            </div>
+          ) : (
+            <button className="input stamp stamp-add" onClick={stamp} disabled={locating}>
+              {locating ? 'Locating…' : '+ Add place & weather'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="field form-row">
+        <label htmlFor="tags">Tags</label>
+        <input id="tags" className="input" value={form.tags} onChange={set('tags')} placeholder="life, work, ideas" />
+        <div className="hint">Comma separated.</div>
       </div>
 
       <div className="file-box">

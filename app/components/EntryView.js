@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
 import { formatDay } from '../../lib/dates';
-import { deleteEntry, getEntry, slugify, toMarkdown } from '../../lib/entries';
+import { deleteEntry, getEntry, placeLine, slugify, toMarkdown } from '../../lib/entries';
 import { usePhotoMarkdown } from '../../lib/photos';
 
 export default function EntryView() {
@@ -70,6 +70,7 @@ export default function EntryView() {
           <span>
             {formatDay(entry.day, { weekday: true })}
             {entry.time && ` · ${entry.time}`}
+            {placeLine(entry) && ` · ${placeLine(entry)}`}
             {' · '}{entry.words.toLocaleString()} words
           </span>
           <div className="actions">
