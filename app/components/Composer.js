@@ -159,7 +159,7 @@ export default function Composer() {
   };
 
   return (
-    <div style={{ maxWidth: 1012, margin: '0 auto' }}>
+    <div className="page">
       <nav className="breadcrumb">
         <Link href="/">entries</Link>
         <span className="sep">/</span>

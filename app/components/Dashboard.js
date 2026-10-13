@@ -59,7 +59,7 @@ export default function Dashboard() {
   const totalWords = entries.reduce((sum, e) => sum + e.words, 0);
 
   return (
-    <div className="dashboard">
+    <div className="page">
       <div className="stats-row">
         <span><strong>{entries.length}</strong> entries</span>
         <span><strong>{totalWords.toLocaleString()}</strong> words</span>
@@ -71,11 +71,11 @@ export default function Dashboard() {
       </div>
 
       <ContributionGraph
-          byDay={byDay}
-          today={today}
-          selectedDay={selectedDay}
-          onSelectDay={(key) => setSelectedDay((cur) => (cur === key ? null : key))}
-        />
+        byDay={byDay}
+        today={today}
+        selectedDay={selectedDay}
+        onSelectDay={(key) => setSelectedDay((cur) => (cur === key ? null : key))}
+      />
       <EntryFeed entries={entries} selectedDay={selectedDay} onClearDay={() => setSelectedDay(null)} />
     </div>
   );

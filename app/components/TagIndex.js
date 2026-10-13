@@ -44,7 +44,7 @@ export default function TagIndex() {
   const pick = (name) => router.push(name && name !== selected ? `/tags/?tag=${encodeURIComponent(name)}` : '/tags/');
 
   return (
-    <div className="dashboard">
+    <div className="page">
       <div className="stats-row">
         <span><strong>{tags.length}</strong> {tags.length === 1 ? 'tag' : 'tags'}</span>
         <span><strong>{entries.length - untagged}</strong> tagged entries</span>
@@ -52,7 +52,7 @@ export default function TagIndex() {
       </div>
 
       <div className="activity-head">
-        <h2 className="section-title" style={{ margin: 0 }}>
+        <h2 className="section-title">
           Tags{' '}
           {selected && (
             <span className="filter-chip">
