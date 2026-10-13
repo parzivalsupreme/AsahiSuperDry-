@@ -40,12 +40,10 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
 
     const weeks = [];
     let total = 0;
-    let totalWords = 0;
     let max = 0;
     for (const [key, d] of byDay) {
       if (key >= startKey && key <= endKey) {
         total += d.count;
-        totalWords += d.words;
         max = Math.max(max, d.words);
       }
     }
@@ -78,7 +76,7 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
       return MONTHS[m];
     });
 
-    return { weeks, months, total, totalWords };
+    return { weeks, months, total };
   }, [byDay, today, view]);
 
   // On narrow screens the graph scrolls sideways; start at the most recent weeks.

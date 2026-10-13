@@ -50,7 +50,7 @@ export default function EntryView() {
   };
 
   return (
-    <div style={{ maxWidth: 1012, margin: '0 auto' }}>
+    <div className="page">
       <nav className="breadcrumb">
         <Link href="/">entries</Link>
         <span className="sep">/</span>
@@ -81,7 +81,7 @@ export default function EntryView() {
         {mode === 'preview' ? (
           <div className="file-body">
             {entry.tags.length > 0 && (
-              <div className="labels" style={{ margin: '0 0 16px' }}>
+              <div className="labels">
                 {entry.tags.map((t) => (
                   <Link className="label" key={t} href={`/tags/?tag=${encodeURIComponent(t)}`}>{t}</Link>
                 ))}

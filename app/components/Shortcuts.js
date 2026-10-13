@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { randomEntryId } from '../../lib/entries';
 
 const KEYS = [
@@ -9,6 +9,7 @@ const KEYS = [
   ['2', 'New entry'],
   ['3', 'Tags'],
   ['4', 'Random entry'],
+  ['5', 'Stats'],
   ['N', 'New entry'],
   ['/', 'Search'],
   ['Ctrl+S', 'Save entry (while writing)'],
@@ -26,7 +27,6 @@ export async function openRandomEntry(router, currentId) {
 // Global keyboard shortcuts, terminal style.
 export default function Shortcuts() {
   const router = useRouter();
-  const pathname = usePathname();
   const [help, setHelp] = useState(false);
 
   useEffect(() => {
@@ -41,12 +41,12 @@ export default function Shortcuts() {
         1: () => router.push('/'),
         2: () => router.push('/new/'),
         n: () => router.push('/new/'),
-        N: () => router.push('/new/'),
         3: () => router.push('/tags/'),
         4: () => openRandomEntry(router, new URLSearchParams(location.search).get('id')),
+        5: () => router.push('/stats/'),
         '?': () => setHelp((h) => !h),
         '/': () => document.querySelector('.search')?.focus(),
-      }[e.key];
+      }[e.key.toLowerCase()];
       if (go) {
         e.preventDefault();
         setHelp(false);
@@ -55,7 +55,7 @@ export default function Shortcuts() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [router, pathname]);
+  }, [router]);
 
   if (!help) return null;
   return (

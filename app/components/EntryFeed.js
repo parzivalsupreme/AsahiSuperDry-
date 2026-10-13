@@ -33,7 +33,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
   return (
     <div className="activity">
       <div className="activity-head">
-        <h2 className="section-title" style={{ margin: 0 }}>
+        <h2 className="section-title">
           Journal activity{' '}
           {selectedDay && (
             <span className="filter-chip">
@@ -76,12 +76,7 @@ export default function EntryFeed({ entries, selectedDay, onClearDay }) {
                     {e.tags.length > 0 && (
                       <span className="labels">
                         {e.tags.map((t) => (
-                          <span
-                            className="label"
-                            key={t}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => setQuery(t)}
-                          >
+                          <span className="label" key={t} onClick={() => setQuery(t)}>
                             {t}
                           </span>
                         ))}

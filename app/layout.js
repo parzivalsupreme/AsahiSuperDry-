@@ -30,6 +30,7 @@ export default function RootLayout({ children }) {
                 <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>
                 <Link href="/tags/" className="fn-key"><span className="num">3)</span>Tags</Link>
                 <RandomKey />
+                <Link href="/stats/" className="fn-key"><span className="num">5)</span>Stats</Link>
               </nav>
             </div>
             <Clock />
