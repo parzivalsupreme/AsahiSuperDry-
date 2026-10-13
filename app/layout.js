@@ -29,7 +29,9 @@ export default function RootLayout({ children }) {
         <header className="site-header">
           <div className="site-header-inner">
             <div className="header-left">
-              <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="" className="logo" />
+              <Link href="/" className="logo-link" aria-label="Entries">
+                <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/logo.png`} alt="" className="logo" />
+              </Link>
               <nav className="fn-keys">
                 <Link href="/" className="fn-key"><span className="num">1)</span>Entries</Link>
                 <Link href="/new/" className="fn-key"><span className="num">2)</span>New entry</Link>

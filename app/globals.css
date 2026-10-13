@@ -65,6 +65,8 @@ code, pre, .mono { font-family: var(--mono); }
 }
 .header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .logo { height: 48px; width: auto; display: block; margin: -6px 0; }
+.logo-link { display: block; flex: none; }
+.logo-link:hover .logo { filter: brightness(1.15); }
 .fn-keys { display: flex; gap: 2px; }
 .fn-key {
   color: #000;
