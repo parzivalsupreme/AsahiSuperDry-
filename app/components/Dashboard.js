@@ -4,31 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import ContributionGraph from './ContributionGraph';
 import EntryFeed from './EntryFeed';
 import ExportButton from './ExportButton';
-import { addDays, dayKey, parseDay } from '../../lib/dates';
+import { computeStreaks, dayKey } from '../../lib/dates';
 import { listEntries } from '../../lib/entries';
-
-function computeStreaks(days, todayKey) {
-  const set = new Set(days);
-  let current = 0;
-  if (todayKey) {
-    let cursor = parseDay(todayKey);
-    if (!set.has(todayKey)) cursor = addDays(cursor, -1); // today isn't over yet
-    while (set.has(dayKey(cursor))) {
-      current++;
-      cursor = addDays(cursor, -1);
-    }
-  }
-  let longest = 0;
-  let run = 0;
-  let prev = null;
-  for (const key of [...set].sort()) {
-    const d = parseDay(key);
-    run = prev && dayKey(addDays(prev, 1)) === key ? run + 1 : 1;
-    longest = Math.max(longest, run);
-    prev = d;
-  }
-  return { current, longest };
-}
 
 export default function Dashboard() {
   const [entries, setEntries] = useState(null);

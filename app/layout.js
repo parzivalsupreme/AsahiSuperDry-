@@ -5,6 +5,7 @@ import CommandKey from './components/CommandKey';
 import RandomKey from './components/RandomKey';
 import Shortcuts from './components/Shortcuts';
 import ThemeControls from './components/ThemeControls';
+import TypingSound from './components/TypingSound';
 import { THEME_BOOT } from '../lib/theme';
 import './globals.css';
 
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
                 <Link href="/tags/" className="fn-key"><span className="num">3)</span>Tags</Link>
                 <RandomKey />
                 <Link href="/stats/" className="fn-key"><span className="num">5)</span>Stats</Link>
+                <Link href="/habits/" className="fn-key"><span className="num">6)</span>Habits</Link>
               </nav>
             </div>
             <div className="header-right">
@@ -50,6 +52,7 @@ export default function RootLayout({ children }) {
         <main className="container">{children}</main>
         <Shortcuts />
         <CommandBar />
+        <TypingSound />
       </body>
     </html>
   );
