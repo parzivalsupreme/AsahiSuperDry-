@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { randomEntryId } from '../../lib/entries';
+import { toggleBlur, togglePanic } from '../../lib/privacy';
 
 const KEYS = [
   ['1', 'Entries'],
@@ -16,6 +17,8 @@ const KEYS = [
   ['N', 'New entry'],
   ['Ctrl+K', 'Command bar'],
   ['/', 'Search'],
+  ['B or Ctrl+.', 'Blur the screen (pointer reveals)'],
+  ['Esc Esc', 'Panic: show a stock chart (again to return)'],
   ['Ctrl+S', 'Save entry (while writing)'],
   ['Esc', 'Leave a text box'],
   ['?', 'Show this help'],
@@ -34,10 +37,21 @@ export default function Shortcuts() {
   const [help, setHelp] = useState(false);
 
   useEffect(() => {
+    let lastEsc = 0;
     const onKey = (e) => {
       if (e.key === 'Escape') {
+        if (e.timeStamp - lastEsc < 400) {
+          togglePanic();
+          lastEsc = 0;
+        } else lastEsc = e.timeStamp;
         if (typing(document.activeElement)) document.activeElement.blur();
         setHelp(false);
+        return;
+      }
+      // Works while typing, so you can hide a half-written entry.
+      if ((e.ctrlKey || e.metaKey) && e.key === '.') {
+        e.preventDefault();
+        toggleBlur();
         return;
       }
       if (e.ctrlKey || e.metaKey || e.altKey || typing(e.target)) return;
@@ -53,6 +67,7 @@ export default function Shortcuts() {
         8: () => router.push('/places/'),
         '?': () => setHelp((h) => !h),
         '/': () => document.querySelector('.search')?.focus(),
+        b: toggleBlur,
       }[e.key.toLowerCase()];
       if (go) {
         e.preventDefault();

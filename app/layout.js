@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Clock from './components/Clock';
 import CommandBar from './components/CommandBar';
 import CommandKey from './components/CommandKey';
+import PanicScreen from './components/PanicScreen';
+import PrivacyBlur from './components/PrivacyBlur';
 import RandomKey from './components/RandomKey';
 import Shortcuts from './components/Shortcuts';
 import ThemeControls from './components/ThemeControls';
@@ -57,6 +59,8 @@ export default function RootLayout({ children }) {
         <Shortcuts />
         <CommandBar />
         <TypingSound />
+        <PrivacyBlur />
+        <PanicScreen />
       </body>
     </html>
   );

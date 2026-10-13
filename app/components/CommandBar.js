@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatDay } from '../../lib/dates';
 import { listEntries } from '../../lib/entries';
 import { supabase } from '../../lib/supabase';
+import { toggleBlur, togglePanic } from '../../lib/privacy';
 import { THEMES, setTheme, toggleCrt } from '../../lib/theme';
 import { openRandomEntry } from './Shortcuts';
 
@@ -56,6 +57,8 @@ export default function CommandBar() {
       { kind: 'Page', label: 'Places', hint: '8', run: go('/places/') },
       ...THEMES.map((t) => ({ kind: 'Theme', label: `Theme: ${t}`, run: () => setTheme(t) })),
       { kind: 'Theme', label: 'Toggle CRT scanlines', run: toggleCrt },
+      { kind: 'Privacy', label: 'Blur the screen', hint: 'B', run: toggleBlur },
+      { kind: 'Privacy', label: 'Panic: show a stock chart', hint: 'Esc Esc', run: togglePanic },
       { kind: 'Help', label: 'Keyboard shortcuts', hint: '?', run: () => window.dispatchEvent(new Event('journal-help')) },
       ...tags.map((t) => ({ kind: 'Tag', label: `#${t}`, run: go(`/tags/?tag=${encodeURIComponent(t)}`) })),
       ...entries.map((e) => ({ kind: 'Entry', label: e.title, hint: formatDay(e.day), run: go(`/entry/?id=${e.id}`) })),
