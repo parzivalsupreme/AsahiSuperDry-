@@ -990,3 +990,27 @@ kbd {
   .bb-ranges { margin-left: 0; }
   .bb-field.wide { margin-left: 0; }
 }
+
+/* ---------- Work ---------- */
+.work-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.task-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.task-form .buttons { display: flex; justify-content: flex-end; gap: 8px; }
+.task-desc { resize: vertical; font-family: var(--mono); line-height: 1.5; }
+.tasks { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border-muted); }
+.task { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; }
+.task + .task { border-top: 1px solid var(--border-muted); }
+.task.editing { display: block; }
+.task.editing .task-form { margin: 0; }
+.task > input[type='checkbox'] { margin-top: 3px; accent-color: var(--btn-primary); flex: none; cursor: pointer; }
+.task-main { flex: 1; min-width: 0; }
+.task-title { color: var(--fg-strong); font-weight: 600; overflow-wrap: anywhere; }
+.task.done .task-title { color: var(--fg-muted); text-decoration: line-through; }
+.task-body { font-size: 14px; margin-top: 4px; }
+.task.done .task-body { opacity: 0.7; }
+.task-actions { display: flex; gap: 6px; flex: none; }
+.task-group { font-size: 12px; font-weight: 600; color: var(--fg-muted); margin: 20px 0 6px; }
+.work-notes-title { margin-top: 32px; }
+@media (max-width: 640px) {
+  .task { flex-wrap: wrap; }
+  .task-actions { width: 100%; justify-content: flex-end; }
+}

@@ -65,3 +65,23 @@ alter table public.entries add column if not exists weather text;
 
 -- Habits ticked off with each entry.
 alter table public.entries add column if not exists habits text[] not null default '{}';
+
+-- Work page: tasks and notes, kept as one Markdown file per account.
+create table if not exists public.work (
+  user_id uuid primary key default auth.uid() references auth.users (id) on delete cascade,
+  body text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+drop trigger if exists work_set_updated_at on public.work;
+create trigger work_set_updated_at
+  before update on public.work
+  for each row execute function public.set_updated_at();
+
+alter table public.work enable row level security;
+
+drop policy if exists "Owner access" on public.work;
+create policy "Owner access" on public.work
+  for all to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
