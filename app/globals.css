@@ -1009,8 +1009,13 @@ kbd {
 .task.done .task-body { opacity: 0.7; }
 .task-actions { display: flex; gap: 6px; flex: none; }
 .task-group { font-size: 12px; font-weight: 600; color: var(--fg-muted); margin: 20px 0 6px; }
-.work-notes-title { margin-top: 32px; }
+.page.work-page { max-width: none; }
+.work-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.work-tasks, .work-notes { min-width: 0; }
+.work-notes .editor { min-height: 60vh; }
+.work-notes .preview { min-height: 60vh; }
 @media (max-width: 640px) {
+  .work-split { grid-template-columns: 1fr; gap: 32px; }
   .task { flex-wrap: wrap; }
   .task-actions { width: 100%; justify-content: flex-end; }
 }

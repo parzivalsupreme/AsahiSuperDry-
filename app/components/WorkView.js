@@ -150,7 +150,7 @@ export default function WorkView() {
   };
 
   return (
-    <div className="page">
+    <div className="page work-page">
       <div className="stats-row">
         <span><strong>{open.length}</strong> open</span>
         <span><strong>{done.length}</strong> done</span>
@@ -169,45 +169,49 @@ export default function WorkView() {
           <pre className="raw">{markdown}</pre>
         </div>
       ) : (
-        <>
-          <h2 className="section-title">Tasks</h2>
-          <TaskForm submitLabel="Add task" onSave={addTask} />
-          {work.tasks.length === 0 ? (
-            <div className="empty">No tasks yet. Add one above.</div>
-          ) : (
-            <>
-              {open.length > 0 && <ul className="tasks">{open.map(item)}</ul>}
-              {done.length > 0 && (
-                <>
-                  <h3 className="task-group">Done</h3>
-                  <ul className="tasks">{done.map(item)}</ul>
-                </>
-              )}
-            </>
-          )}
-
-          <h2 className="section-title work-notes-title">Notes</h2>
-          <div className="file-box">
-            <div className="tabnav">
-              <button className={notesTab === 'write' ? 'active' : ''} onClick={() => setNotesTab('write')}>Write</button>
-              <button className={notesTab === 'preview' ? 'active' : ''} onClick={() => setNotesTab('preview')}>Preview</button>
-            </div>
-            {notesTab === 'write' ? (
-              <textarea
-                className="editor"
-                value={work.notes}
-                onChange={(e) => {
-                  const notes = e.target.value;
-                  update((w) => ({ ...w, notes }), { debounce: true });
-                }}
-                placeholder="General work notes in Markdown…"
-                spellCheck
-              />
+        <div className="work-split">
+          <section className="work-tasks">
+            <h2 className="section-title">Tasks</h2>
+            <TaskForm submitLabel="Add task" onSave={addTask} />
+            {work.tasks.length === 0 ? (
+              <div className="empty">No tasks yet. Add one above.</div>
             ) : (
-              <div className="preview markdown-body" dangerouslySetInnerHTML={md(work.notes || '*Nothing to preview*')} />
+              <>
+                {open.length > 0 && <ul className="tasks">{open.map(item)}</ul>}
+                {done.length > 0 && (
+                  <>
+                    <h3 className="task-group">Done</h3>
+                    <ul className="tasks">{done.map(item)}</ul>
+                  </>
+                )}
+              </>
             )}
-          </div>
-        </>
+          </section>
+
+          <section className="work-notes">
+            <h2 className="section-title">Notes</h2>
+            <div className="file-box">
+              <div className="tabnav">
+                <button className={notesTab === 'write' ? 'active' : ''} onClick={() => setNotesTab('write')}>Write</button>
+                <button className={notesTab === 'preview' ? 'active' : ''} onClick={() => setNotesTab('preview')}>Preview</button>
+              </div>
+              {notesTab === 'write' ? (
+                <textarea
+                  className="editor"
+                  value={work.notes}
+                  onChange={(e) => {
+                    const notes = e.target.value;
+                    update((w) => ({ ...w, notes }), { debounce: true });
+                  }}
+                  placeholder="General work notes in Markdown…"
+                  spellCheck
+                />
+              ) : (
+                <div className="preview markdown-body" dangerouslySetInnerHTML={md(work.notes || '*Nothing to preview*')} />
+              )}
+            </div>
+          </section>
+        </div>
       )}
     </div>
   );
