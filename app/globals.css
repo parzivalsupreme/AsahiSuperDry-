@@ -1005,6 +1005,7 @@ kbd {
 .task-title { color: var(--fg-strong); font-weight: 600; overflow-wrap: anywhere; }
 .task.done .task-title { color: var(--fg-muted); text-decoration: line-through; }
 .task-body { font-size: 14px; margin-top: 4px; }
+.task-body.rich-text { font-size: 14px; }
 .task.done .task-body { opacity: 0.7; }
 .task-actions { display: flex; gap: 6px; flex: none; }
 .task-group { font-size: 12px; font-weight: 600; color: var(--fg-muted); margin: 20px 0 6px; }
@@ -1042,9 +1043,45 @@ kbd {
 }
 .rich-toolbar button:hover, .rich-size:hover { background: var(--btn-hover); }
 .rich-toolbar button.active { background: var(--btn-primary); border-color: var(--btn-primary); color: #000; }
-.rich-body { min-height: 90px; padding: 10px 12px; font-size: 15px; outline: none; cursor: text; }
-.rich-body p { margin: 0 0 8px; }
-.rich-body h1, .rich-body h2, .rich-body h3 { margin: 12px 0 8px; }
+.rich-body { min-height: 90px; padding: 10px 12px; outline: none; cursor: text; position: relative; }
 .rich-body.is-empty::before { content: attr(data-placeholder); color: var(--fg-muted); pointer-events: none; position: absolute; }
-.task-body p { margin: 0 0 6px; }
+
+/* Notes-app text: one line per line, no gaps between paragraphs, spaces kept. */
+.rich-body, .rich-text { font-size: 15px; line-height: 1.5; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+.rich-body p, .rich-text p { margin: 0; }
+.rich-body h1, .rich-text h1, .rich-body h2, .rich-text h2, .rich-body h3, .rich-text h3 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--fg-strong);
+}
+.rich-body h1, .rich-text h1 { font-size: 1.75em; }
+.rich-body h2, .rich-text h2 { font-size: 1.35em; }
+.rich-body h3, .rich-text h3 { font-size: 1.1em; }
+.rich-body ul, .rich-text ul, .rich-body ol, .rich-text ol { margin: 0; padding-left: 1.6em; }
+.rich-body li, .rich-text li { margin: 0; }
+.rich-body ul.checklist, .rich-text ul.checklist { list-style: none; padding-left: 28px; }
+.checklist > li { position: relative; }
+.checklist > li::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 4px;
+  width: 15px;
+  height: 15px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--fg-muted);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+.checklist > li[data-checked='true']::before { content: '✓'; border-color: var(--btn-primary); background: var(--btn-primary); color: #000; }
+.checklist > li[data-checked='true'] { color: var(--fg-muted); }
+.rich-body hr, .rich-text hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
+.rich-body code, .rich-text code { background: var(--bg-subtle); padding: 0 4px; }
 @media (max-width: 640px) { .rich-body { font-size: 16px; } }
