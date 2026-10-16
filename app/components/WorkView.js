@@ -31,11 +31,11 @@ function TaskForm({ task, onSave, onCancel, submitLabel }) {
   );
 }
 
-function TaskItem({ task, onToggle, onEdit, onDelete }) {
+function TaskItem({ task, rank, handle, dragging, onToggle, onEdit, onDelete }) {
   const [editing, setEditing] = useState(false);
   if (editing) {
     return (
-      <li className="task editing">
+      <li className="task editing" data-id={task.id}>
         <TaskForm
           task={task}
           submitLabel="Save"
@@ -49,7 +49,11 @@ function TaskItem({ task, onToggle, onEdit, onDelete }) {
     );
   }
   return (
-    <li className={`task${task.done ? ' done' : ''}`}>
+    <li className={`task${task.done ? ' done' : ''}${dragging ? ' dragging' : ''}`} data-id={task.id}>
+      <button type="button" className="task-handle" data-handle={task.id} title="Drag to reorder (or focus and use ↑ ↓)" aria-label={`Move ${task.title}`} {...handle}>
+        ⠿
+      </button>
+      {rank && <span className="task-rank">{rank}.</span>}
       <input type="checkbox" checked={task.done} onChange={onToggle} aria-label={`Done: ${task.title}`} />
       <div className="task-main">
         <div className="task-title">{task.title}</div>
@@ -72,6 +76,10 @@ export default function WorkView() {
   const saving = useRef(Promise.resolve());
   const notesTimer = useRef(null);
   const latest = useRef(null);
+  const lists = { open: useRef(null), done: useRef(null) };
+  const [drag, setDrag] = useState(null); // { list, id, order, from }
+  const dragRef = useRef(null);
+  dragRef.current = drag;
 
   useEffect(() => {
     getWork().then((body) => {
@@ -123,10 +131,73 @@ export default function WorkView() {
 
   const open = work.tasks.filter((t) => !t.done);
   const done = work.tasks.filter((t) => t.done);
-  const item = (t) => (
+
+  // Puts one list (open or done) in the given order; open tasks stay above done ones in work.md.
+  const reorder = (list, order) =>
+    update((w) => {
+      const byId = new Map(w.tasks.map((t) => [t.id, t]));
+      const sorted = order.map((id) => byId.get(id));
+      const rest = w.tasks.filter((t) => (list === 'open' ? t.done : !t.done));
+      return { ...w, tasks: list === 'open' ? [...sorted, ...rest] : [...rest, ...sorted] };
+    });
+
+  const ids = (list) => (list === 'open' ? open : done).map((t) => t.id);
+
+  // Drag the handle with a mouse or finger; the list reorders as you move.
+  const handleFor = (list, id) => ({
+    onPointerDown: (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setDrag({ list, id, order: ids(list), from: ids(list) });
+    },
+    onPointerMove: (e) => {
+      const d = dragRef.current;
+      if (!d || d.id !== id) return;
+      const items = [...lists[list].current.children].filter((li) => li.dataset.id !== id);
+      let at = items.findIndex((li) => {
+        const r = li.getBoundingClientRect();
+        return e.clientY < r.top + r.height / 2;
+      });
+      if (at < 0) at = items.length;
+      const order = d.order.filter((x) => x !== id);
+      order.splice(at, 0, id);
+      if (order.join() !== d.order.join()) setDrag({ ...d, order });
+    },
+    onPointerUp: () => {
+      const d = dragRef.current;
+      setDrag(null);
+      if (d && d.order.join() !== d.from.join()) reorder(list, d.order);
+    },
+    onPointerCancel: () => setDrag(null),
+    // Keyboard: arrow keys move the task one place (Home/End to the top or bottom).
+    onKeyDown: (e) => {
+      const order = ids(list);
+      const i = order.indexOf(id);
+      const to = { ArrowUp: i - 1, ArrowDown: i + 1, Home: 0, End: order.length - 1 }[e.key];
+      if (to === undefined) return;
+      e.preventDefault();
+      if (to < 0 || to >= order.length || to === i) return;
+      order.splice(i, 1);
+      order.splice(to, 0, id);
+      reorder(list, order);
+      requestAnimationFrame(() => document.querySelector(`[data-handle="${id}"]`)?.focus());
+    },
+  });
+
+  const shown = (list, tasks) => {
+    if (drag?.list !== list) return tasks;
+    const byId = new Map(tasks.map((t) => [t.id, t]));
+    return drag.order.map((id) => byId.get(id));
+  };
+
+  const item = (list) => (t, i) => (
     <TaskItem
       key={t.id}
       task={t}
+      rank={list === 'open' ? i + 1 : null}
+      handle={handleFor(list, t.id)}
+      dragging={drag?.id === t.id}
       onToggle={() => setTask(t.id, { done: !t.done })}
       onEdit={(change) => setTask(t.id, change)}
       onDelete={() => removeTask(t.id)}
@@ -170,11 +241,11 @@ export default function WorkView() {
               <div className="empty">No tasks yet. Add one above.</div>
             ) : (
               <>
-                {open.length > 0 && <ul className="tasks">{open.map(item)}</ul>}
+                {open.length > 0 && <ul className="tasks" ref={lists.open}>{shown('open', open).map(item('open'))}</ul>}
                 {done.length > 0 && (
                   <>
                     <h3 className="task-group">Done</h3>
-                    <ul className="tasks">{done.map(item)}</ul>
+                    <ul className="tasks" ref={lists.done}>{shown('done', done).map(item('done'))}</ul>
                   </>
                 )}
               </>
