@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { marked } from 'marked';
+import RichEditor from './RichEditor';
 import { getWork, newTask, parseWork, saveWork, toWorkMarkdown } from '../../lib/work';
 
 const md = (text) => ({ __html: marked.parse(text || '') });
@@ -21,14 +22,7 @@ function TaskForm({ task, onSave, onCancel, submitLabel }) {
   return (
     <form className="task-form" onSubmit={submit}>
       <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task" aria-label="Task" autoFocus={!!task} />
-      <textarea
-        className="input task-desc"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description (Markdown, optional)"
-        aria-label="Description"
-        rows={3}
-      />
+      <RichEditor className="task-desc" value={description} onChange={setDescription} placeholder="Description (optional)" label="Description" />
       <div className="buttons">
         {onCancel && <button type="button" className="btn btn-sm" onClick={onCancel}>Cancel</button>}
         <button className="btn btn-sm btn-primary" disabled={!title.trim()}>{submitLabel}</button>
@@ -75,7 +69,6 @@ export default function WorkView() {
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const [mode, setMode] = useState('page');
-  const [notesTab, setNotesTab] = useState('write');
   const saving = useRef(Promise.resolve());
   const notesTimer = useRef(null);
   const latest = useRef(null);
@@ -190,26 +183,13 @@ export default function WorkView() {
 
           <section className="work-notes">
             <h2 className="section-title">Notes</h2>
-            <div className="file-box">
-              <div className="tabnav">
-                <button className={notesTab === 'write' ? 'active' : ''} onClick={() => setNotesTab('write')}>Write</button>
-                <button className={notesTab === 'preview' ? 'active' : ''} onClick={() => setNotesTab('preview')}>Preview</button>
-              </div>
-              {notesTab === 'write' ? (
-                <textarea
-                  className="editor"
-                  value={work.notes}
-                  onChange={(e) => {
-                    const notes = e.target.value;
-                    update((w) => ({ ...w, notes }), { debounce: true });
-                  }}
-                  placeholder="General work notes in Markdown…"
-                  spellCheck
-                />
-              ) : (
-                <div className="preview markdown-body" dangerouslySetInnerHTML={md(work.notes || '*Nothing to preview*')} />
-              )}
-            </div>
+            <RichEditor
+              className="notes-editor"
+              value={work.notes}
+              onChange={(notes) => update((w) => ({ ...w, notes }), { debounce: true })}
+              placeholder="General work notes…"
+              label="Notes"
+            />
           </section>
         </div>
       )}
