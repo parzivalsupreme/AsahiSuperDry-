@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { marked } from 'marked';
+import { markdownToHtml } from '../../lib/richtext';
 import RichEditor from './RichEditor';
 import { getWork, newTask, parseWork, saveWork, toWorkMarkdown } from '../../lib/work';
 
-const md = (text) => ({ __html: marked.parse(text || '') });
+const md = (text) => ({ __html: markdownToHtml(text) });
 
 function TaskForm({ task, onSave, onCancel, submitLabel }) {
   const [title, setTitle] = useState(task?.title || '');
@@ -53,7 +53,7 @@ function TaskItem({ task, onToggle, onEdit, onDelete }) {
       <input type="checkbox" checked={task.done} onChange={onToggle} aria-label={`Done: ${task.title}`} />
       <div className="task-main">
         <div className="task-title">{task.title}</div>
-        {task.description && <div className="markdown-body task-body" dangerouslySetInnerHTML={md(task.description)} />}
+        {task.description && <div className="rich-text task-body" dangerouslySetInnerHTML={md(task.description)} />}
       </div>
       <div className="task-actions">
         <button className="btn btn-sm" onClick={() => setEditing(true)}>Edit</button>
