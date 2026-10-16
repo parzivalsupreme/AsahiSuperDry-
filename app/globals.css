@@ -1002,6 +1002,24 @@ kbd {
 .task.editing .task-form { margin: 0; }
 .task > input[type='checkbox'] { margin-top: 3px; accent-color: var(--btn-primary); flex: none; cursor: pointer; }
 .task-main { flex: 1; min-width: 0; }
+.task-handle {
+  flex: none;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 4px;
+  margin: -2px -4px 0 -6px;
+  color: var(--fg-muted);
+  background: none;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.task-handle:hover, .task-handle:focus-visible { color: var(--accent); }
+.task-rank { flex: none; min-width: 1.6em; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.task.dragging { background: var(--bg-subtle); outline: 1px solid var(--accent); position: relative; z-index: 1; }
+.task.dragging .task-handle { cursor: grabbing; color: var(--accent); }
 .task-title { color: var(--fg-strong); font-weight: 600; overflow-wrap: anywhere; }
 .task.done .task-title { color: var(--fg-muted); text-decoration: line-through; }
 .task-body { font-size: 14px; margin-top: 4px; }
