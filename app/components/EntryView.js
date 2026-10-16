@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { marked } from 'marked';
-import { formatDay } from '../../lib/dates';
-import { deleteEntry, getEntry, placeLine, slugify, toMarkdown } from '../../lib/entries';
+import ContributionGraph from './ContributionGraph';
+import { dayKey, formatDay } from '../../lib/dates';
+import { dayHref, deleteEntry, entriesByDay, getEntry, listEntries, placeLine, slugify, toMarkdown } from '../../lib/entries';
 import { photoPaths, usePhotoMarkdown } from '../../lib/photos';
 
 export default function EntryView() {
@@ -14,11 +15,24 @@ export default function EntryView() {
   const [entry, setEntry] = useState(undefined);
   const [error, setError] = useState('');
   const [mode, setMode] = useState('preview');
+  const [byDay, setByDay] = useState(null);
+  const [today, setToday] = useState(null);
 
   useEffect(() => {
     if (!id) return setEntry(null);
     getEntry(id).then(setEntry, (e) => setError(e.message));
   }, [id]);
+
+  // The journal graph under the entry; a failed load just leaves it out.
+  useEffect(() => {
+    setToday(dayKey(new Date()));
+    listEntries().then((list) => setByDay(entriesByDay(list)), () => {});
+  }, []);
+
+  const openDay = (key) => {
+    const href = dayHref(key, byDay?.get(key)?.ids);
+    if (href) router.push(href);
+  };
 
   const body = usePhotoMarkdown(entry?.body);
   const html = useMemo(() => (body ? marked.parse(body) : ''), [body]);
@@ -101,6 +115,12 @@ export default function EntryView() {
           <pre className="raw">{markdown}</pre>
         )}
       </div>
+
+      {byDay && (
+        <div className="entry-graph">
+          <ContributionGraph byDay={byDay} today={today} selectedDay={entry.day} onSelectDay={openDay} />
+        </div>
+      )}
     </div>
   );
 }

@@ -228,6 +228,9 @@ code, pre { font-family: var(--mono); }
   white-space: nowrap;
 }
 
+/* Entry page: the same graph under the entry, its day outlined. */
+.entry-graph { margin-top: 32px; }
+
 /* ---------- Activity feed ---------- */
 .activity { margin-top: 32px; }
 .activity-head {
@@ -836,6 +839,8 @@ kbd {
   overflow-x: auto;
 }
 .habit-grid .cell { width: auto; height: auto; aspect-ratio: 1; cursor: default; }
+.habit-grid .cell.linked { cursor: pointer; }
+.habit-grid .cell.linked:hover, .habit-grid .cell.linked:focus-visible { outline: 2px solid var(--fg); outline-offset: -1px; }
 @media (max-width: 640px) {
   .habit-new { width: 100%; }
   .habit { padding: 12px; }

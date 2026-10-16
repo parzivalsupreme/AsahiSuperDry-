@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MONTHS, addDays, dayKey, formatDay, ordinal, parseDay } from '../../lib/dates';
+import { MONTHS, addDays, dayKey, formatDay, parseDay, tipDay } from '../../lib/dates';
 
 const WEEKDAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
@@ -94,9 +94,7 @@ export default function ContributionGraph({ byDay, today, selectedDay, onSelectD
     const what = cell.count
       ? `${cell.count} ${cell.count === 1 ? 'entry' : 'entries'} (${cell.words.toLocaleString()} words)`
       : 'No entries';
-    const d = parseDay(cell.key);
-    const date = `${d.toLocaleDateString('en-US', { month: 'long' })} ${ordinal(d.getDate())}`;
-    setTip({ x: r.left + r.width / 2, y: r.top, text: `${what} on ${date}.` });
+    setTip({ x: r.left + r.width / 2, y: r.top, text: `${what} on ${tipDay(cell.key)}.` });
   };
 
   return (

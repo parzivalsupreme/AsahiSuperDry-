@@ -1,19 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { addDays, computeStreaks, dayKey, formatDay, parseDay } from '../../lib/dates';
-import { listEntries } from '../../lib/entries';
+import { addDays, computeStreaks, dayKey, formatDay, parseDay, tipDay } from '../../lib/dates';
+import { dayHref, listEntries } from '../../lib/entries';
 
 const WEEKS = 52;
 
 // One row per habit: streaks, last-30-day count and a one-year grid.
 function habitRows(entries, todayKey) {
-  const days = new Map(); // habit -> Set of days
+  const days = new Map(); // habit -> Map of day -> entries that ticked it
   for (const e of entries) {
     for (const h of e.habits) {
-      if (!days.has(h)) days.set(h, new Set());
-      days.get(h).add(e.day);
+      if (!days.has(h)) days.set(h, new Map());
+      const byDay = days.get(h);
+      if (!byDay.has(e.day)) byDay.set(e.day, []);
+      byDay.get(e.day).push(e);
     }
   }
   const today = parseDay(todayKey);
@@ -22,27 +25,52 @@ function habitRows(entries, todayKey) {
   for (let d = addDays(today, -(WEEKS - 1) * 7 - today.getDay()); d <= today; d = addDays(d, 1)) grid.push(dayKey(d));
 
   return [...days]
-    .map(([name, set]) => ({
+    .map(([name, byDay]) => ({
       name,
-      ...computeStreaks([...set], todayKey),
-      last30: [...set].filter((k) => k >= since30).length,
-      total: set.size,
-      cells: grid.map((key) => ({ key, done: set.has(key) })),
+      ...computeStreaks([...byDay.keys()], todayKey),
+      last30: [...byDay.keys()].filter((k) => k >= since30).length,
+      total: byDay.size,
+      cells: grid.map((key) => ({ key, done: byDay.has(key), entries: byDay.get(key) || [] })),
     }))
     .sort((a, b) => b.last30 - a.last30 || b.total - a.total || a.name.localeCompare(b.name));
 }
 
+function tipText(c) {
+  if (!c.done) return `Not done on ${tipDay(c.key)}.`;
+  const what = c.entries.length === 1 ? `"${c.entries[0].title}"` : `${c.entries.length} entries`;
+  return `Done on ${tipDay(c.key)}: ${what}.`;
+}
+
 // On narrow screens the grid scrolls sideways; start at the latest weeks.
-function HabitGrid({ habit }) {
+// Done boxes open the entry that ticked the habit (or that day's list when there are several).
+function HabitGrid({ habit, onTip }) {
   const ref = useRef(null);
+  const router = useRouter();
   useEffect(() => {
     ref.current.scrollLeft = ref.current.scrollWidth;
   }, []);
   return (
-    <div ref={ref} className="habit-grid" role="img" aria-label={`${habit.name}: done ${habit.total} days`}>
-      {habit.cells.map((c) => (
-        <span key={c.key} className="cell" data-level={c.done ? 4 : 0} title={`${formatDay(c.key)}: ${c.done ? 'done' : 'not done'}`} />
-      ))}
+    <div ref={ref} className="habit-grid" aria-label={`${habit.name}: done ${habit.total} days`} onScroll={() => onTip(null)}>
+      {habit.cells.map((c) => {
+        const href = dayHref(c.key, c.entries.map((e) => e.id));
+        return (
+          <span
+            key={c.key}
+            className={`cell${href ? ' linked' : ''}`}
+            data-level={c.done ? 4 : 0}
+            role={href ? 'link' : undefined}
+            tabIndex={href ? 0 : undefined}
+            aria-label={`${formatDay(c.key)}: ${c.done ? 'done' : 'not done'}`}
+            onMouseEnter={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              onTip({ x: r.left + r.width / 2, y: r.top, text: tipText(c) });
+            }}
+            onMouseLeave={() => onTip(null)}
+            onClick={href ? () => router.push(href) : undefined}
+            onKeyDown={href ? (e) => e.key === 'Enter' && router.push(href) : undefined}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -51,6 +79,7 @@ export default function HabitsView() {
   const [entries, setEntries] = useState(null);
   const [error, setError] = useState('');
   const [today, setToday] = useState(null);
+  const [tip, setTip] = useState(null);
 
   useEffect(() => {
     setToday(dayKey(new Date()));
@@ -86,9 +115,14 @@ export default function HabitsView() {
                 <span>Best <strong>{r.longest}</strong></span>
                 <span><strong>{r.last30}</strong>/30 days</span>
               </div>
-              <HabitGrid habit={r} />
+              <HabitGrid habit={r} onTip={setTip} />
             </section>
           ))}
+        </div>
+      )}
+      {tip && (
+        <div className="tooltip" style={{ left: tip.x, top: tip.y }}>
+          {tip.text}
         </div>
       )}
     </div>

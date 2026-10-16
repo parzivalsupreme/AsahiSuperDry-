@@ -5,7 +5,7 @@ import ContributionGraph from './ContributionGraph';
 import EntryFeed from './EntryFeed';
 import ExportButton from './ExportButton';
 import { computeStreaks, dayKey } from '../../lib/dates';
-import { listEntries } from '../../lib/entries';
+import { entriesByDay, listEntries } from '../../lib/entries';
 
 export default function Dashboard() {
   const [entries, setEntries] = useState(null);
@@ -15,19 +15,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     setToday(dayKey(new Date()));
+    // Habit and entry-page graphs link here with ?day= when a day has several entries.
+    const day = new URLSearchParams(window.location.search).get('day');
+    if (/^\d{4}-\d{2}-\d{2}$/.test(day || '')) setSelectedDay(day);
     listEntries().then(setEntries, (e) => setError(e.message));
   }, []);
 
-  const byDay = useMemo(() => {
-    const map = new Map();
-    for (const e of entries || []) {
-      const d = map.get(e.day) || { count: 0, words: 0 };
-      d.count++;
-      d.words += e.words;
-      map.set(e.day, d);
-    }
-    return map;
-  }, [entries]);
+  const byDay = useMemo(() => entriesByDay(entries), [entries]);
 
   const streaks = useMemo(() => computeStreaks([...byDay.keys()], today), [byDay, today]);
 
