@@ -23,7 +23,7 @@ export default function ExportButton({ entries }) {
   };
 
   return (
-    <button className="btn btn-sm" onClick={run} disabled={busy || entries.length === 0}>
+    <button className="btn btn-sm" onClick={run} disabled={busy}>
       {busy ? 'Exporting…' : 'Export all (.zip)'}
     </button>
   );

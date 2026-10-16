@@ -55,6 +55,7 @@ export default function CommandBar() {
       { kind: 'Page', label: 'Habits', hint: '6', run: go('/habits/') },
       { kind: 'Page', label: 'Photos', hint: '7', run: go('/photos/') },
       { kind: 'Page', label: 'Places', hint: '8', run: go('/places/') },
+      { kind: 'Page', label: 'Work', hint: '9', run: go('/work/') },
       ...THEMES.map((t) => ({ kind: 'Theme', label: `Theme: ${t}`, run: () => setTheme(t) })),
       { kind: 'Theme', label: 'Toggle CRT scanlines', run: toggleCrt },
       { kind: 'Privacy', label: 'Blur the screen', hint: 'B', run: toggleBlur },

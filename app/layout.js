@@ -45,6 +45,7 @@ export default function RootLayout({ children }) {
                 <Link href="/habits/" className="fn-key"><span className="num">6)</span>Habits</Link>
                 <Link href="/photos/" className="fn-key"><span className="num">7)</span>Photos</Link>
                 <Link href="/places/" className="fn-key"><span className="num">8)</span>Places</Link>
+                <Link href="/work/" className="fn-key"><span className="num">9)</span>Work</Link>
               </nav>
             </div>
             <div className="header-right">
