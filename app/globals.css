@@ -995,7 +995,6 @@ kbd {
 .work-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .task-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .task-form .buttons { display: flex; justify-content: flex-end; gap: 8px; }
-.task-desc { resize: vertical; font-family: var(--mono); line-height: 1.5; }
 .tasks { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border-muted); }
 .task { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; }
 .task + .task { border-top: 1px solid var(--border-muted); }
@@ -1012,10 +1011,40 @@ kbd {
 .page.work-page { max-width: none; }
 .work-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
 .work-tasks, .work-notes { min-width: 0; }
-.work-notes .editor { min-height: 60vh; }
-.work-notes .preview { min-height: 60vh; }
+.notes-editor .rich-body { min-height: 60vh; }
 @media (max-width: 640px) {
   .work-split { grid-template-columns: 1fr; gap: 32px; }
   .task { flex-wrap: wrap; }
   .task-actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ---------- Rich text editor (writes Markdown) ---------- */
+.rich { border: 1px solid var(--border); background: var(--bg); }
+.rich:focus-within { border-color: var(--accent); }
+.rich-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+.rich-toolbar button, .rich-size {
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  color: var(--fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  cursor: pointer;
+}
+.rich-toolbar button:hover, .rich-size:hover { background: var(--btn-hover); }
+.rich-toolbar button.active { background: var(--btn-primary); border-color: var(--btn-primary); color: #000; }
+.rich-body { min-height: 90px; padding: 10px 12px; font-size: 15px; outline: none; cursor: text; }
+.rich-body p { margin: 0 0 8px; }
+.rich-body h1, .rich-body h2, .rich-body h3 { margin: 12px 0 8px; }
+.rich-body.is-empty::before { content: attr(data-placeholder); color: var(--fg-muted); pointer-events: none; position: absolute; }
+.task-body p { margin: 0 0 6px; }
+@media (max-width: 640px) { .rich-body { font-size: 16px; } }
